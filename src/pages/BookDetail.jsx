@@ -1,0 +1,159 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { BookOpen, Users, Plus, Languages } from 'lucide-react';
+
+const BookDetail = () => {
+  const { id } = useParams();
+  const { user } = useAuth();
+  const [book, setBook] = useState(null);
+  const [translations, setTranslations] = useState([]);
+
+  useEffect(() => {
+    // Mock data based on book ID
+    const mockBook = {
+      id: parseInt(id),
+      title: 'Basic Spanish Conversations',
+      author: 'Jane Smith',
+      description: 'Essential phrases and conversations for Spanish learners',
+      sourceLanguage: 'English',
+      targetLanguage: 'Spanish',
+      coverImageUrl: null,
+      translationsCount: 25,
+      contributorsCount: 3,
+      isPublic: true,
+      tags: ['beginner', 'conversation', 'spanish'],
+      createdBy: 'Jane Smith',
+      createdDate: '2024-01-01'
+    };
+
+    const mockTranslations = [
+      {
+        id: 1,
+        originalText: 'Hello, how are you?',
+        translatedText: 'Hola, ¿cómo estás?',
+        context: 'Chapter 1 - Greetings',
+        orderIndex: 1,
+        createdBy: 'Jane Smith',
+        createdDate: '2024-01-01'
+      },
+      {
+        id: 2,
+        originalText: 'Nice to meet you.',
+        translatedText: 'Mucho gusto.',
+        context: 'Chapter 1 - Greetings',
+        orderIndex: 2,
+        createdBy: 'John Doe',
+        createdDate: '2024-01-02'
+      }
+    ];
+
+    setBook(mockBook);
+    setTranslations(mockTranslations);
+  }, [id]);
+
+  if (!book) {
+    return (
+      <div className="text-center py-12">
+        <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+        <p className="text-slate-500">Loading book...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Book Header */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-32 h-40 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              {book.coverImageUrl ? (
+                <img 
+                  src={book.coverImageUrl} 
+                  alt={book.title}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              ) : (
+                <BookOpen className="w-16 h-16 text-slate-400" />
+              )}
+            </div>
+            
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-slate-900 mb-2">{book.title}</h1>
+              <p className="text-lg text-slate-600 mb-3">by {book.author}</p>
+              <p className="text-slate-700 mb-4">{book.description}</p>
+              
+              <div className="flex items-center space-x-4 text-sm text-slate-600 mb-4">
+                <div className="flex items-center">
+                  <Languages className="w-4 h-4 mr-1" />
+                  {book.sourceLanguage} → {book.targetLanguage}
+                </div>
+                <div className="flex items-center">
+                  <BookOpen className="w-4 h-4 mr-1" />
+                  {book.translationsCount} translations
+                </div>
+                <div className="flex items-center">
+                  <Users className="w-4 h-4 mr-1" />
+                  {book.contributorsCount} contributors
+                </div>
+              </div>
+              
+              <div className="flex gap-2 flex-wrap mb-4">
+                {book.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              
+              {user && (
+                <Button className="bg-teal-500 hover:bg-teal-600">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Translation
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Translations List */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Translations</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {translations.map((translation) => (
+              <div key={translation.id} className="border border-slate-200 rounded-lg p-4">
+                <div className="grid md:grid-cols-2 gap-4 mb-3">
+                  <div className="p-3 bg-slate-50 rounded-lg">
+                    <h4 className="font-medium text-slate-700 mb-2">Original</h4>
+                    <p className="text-slate-900">{translation.originalText}</p>
+                  </div>
+                  <div className="p-3 bg-teal-50 rounded-lg">
+                    <h4 className="font-medium text-teal-700 mb-2">Translation</h4>
+                    <p className="text-teal-900">{translation.translatedText}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between text-sm text-slate-500">
+                  <span>{translation.context}</span>
+                  <span>by {translation.createdBy} • {translation.createdDate}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default BookDetail;
