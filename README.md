@@ -50,7 +50,7 @@ A modern translation management platform built with React and Google Auth, desig
 
 1. **Clone and install dependencies**:
 ```bash
-cd stagify-new
+cd lingua-stagify
 npm install
 ```
 
