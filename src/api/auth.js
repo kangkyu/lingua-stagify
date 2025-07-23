@@ -1,11 +1,12 @@
 // Frontend-only Google OAuth implementation
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = import.meta.env.VITE_GOOGLE_CLIENT_SECRET;
 const REDIRECT_URI = `${window.location.origin}/auth/callback`;
 
 // Generate Google OAuth URL
 export const getGoogleAuthUrl = async () => {
-  if (!GOOGLE_CLIENT_ID) {
-    throw new Error('Google Client ID not configured. Please set VITE_GOOGLE_CLIENT_ID environment variable.');
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+    throw new Error('Google OAuth not configured. Please set VITE_GOOGLE_CLIENT_ID and VITE_GOOGLE_CLIENT_SECRET environment variables.');
   }
 
   const params = new URLSearchParams({
@@ -23,8 +24,8 @@ export const getGoogleAuthUrl = async () => {
 // Handle Google OAuth callback
 export const handleGoogleCallback = async (code) => {
   try {
-    if (!GOOGLE_CLIENT_ID) {
-      throw new Error('Google Client ID not configured');
+    if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+      throw new Error('Google OAuth not configured');
     }
 
     // Exchange authorization code for access token
@@ -35,6 +36,7 @@ export const handleGoogleCallback = async (code) => {
       },
       body: new URLSearchParams({
         client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
         code: code,
         grant_type: 'authorization_code',
         redirect_uri: REDIRECT_URI
