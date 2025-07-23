@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Serverless API functions for Lingua Stagify",
   "scripts": {
-    "dev": "vercel dev --listen 3001",
+    "dev": "echo 'API functions ready - use Vercel CLI from root for local testing'",
     "build": "echo 'Serverless functions ready for deployment'",
     "lint": "echo 'No lint configured for API'"
   },
