@@ -49,10 +49,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const handleAuthCallback = async (code) => {
+  const handleAuthCallback = async () => {
     try {
       setLoading(true);
-      const result = await handleGoogleCallback(code);
+      const result = await handleGoogleCallback();
 
       if (result.success) {
         setUser(result.user);

@@ -14,26 +14,26 @@ const AuthCallback = () => {
       const code = searchParams.get('code');
       const error = searchParams.get('error');
 
-      // Check for error in query params
-      if (error) {
+      // Check for error in query params or URL fragment
+      if (error || window.location.hash.includes('error=')) {
         setStatus('error');
         setError('Authentication was cancelled or failed');
         setTimeout(() => navigate('/'), 3000);
         return;
       }
 
-      // Check for ID token in URL fragment (implicit flow)
+      // Check for ID token in URL fragment
       const hasTokenInFragment = window.location.hash.includes('id_token=');
 
-      if (!code && !hasTokenInFragment) {
+      if (!hasTokenInFragment) {
         setStatus('error');
-        setError('No authorization code or token received');
+        setError('No ID token received from Google');
         setTimeout(() => navigate('/'), 3000);
         return;
       }
 
       try {
-        const result = await handleAuthCallback(code);
+        const result = await handleAuthCallback();
         if (result.success) {
           setStatus('success');
           setTimeout(() => navigate('/feed'), 1500);
