@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Plus, BookOpen, Users } from 'lucide-react';
-import { bookService } from '@/lib/database';
+import { bookService } from '@/lib/api';
 
 const Books = () => {
   const { user } = useAuth();
