@@ -3,20 +3,8 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 const REDIRECT_URI = `${window.location.origin}/auth/callback`;
 
-// Generate Google OAuth URL - using implicit flow for frontend-only
+// Generate Google OAuth URL for ID token flow
 export const getGoogleAuthUrl = async () => {
-  try {
-    // Try to get from backend first (preferred for consistency)
-    const response = await fetch(`${API_BASE_URL}/api/auth/google/url`);
-    if (response.ok) {
-      const data = await response.json();
-      return data.authUrl;
-    }
-  } catch (error) {
-    console.log('Backend not available, using frontend-only auth');
-  }
-
-  // Frontend-only: Use implicit flow to get ID token directly
   if (!GOOGLE_CLIENT_ID) {
     throw new Error('Google Client ID not configured. Please set VITE_GOOGLE_CLIENT_ID environment variable.');
   }
@@ -24,7 +12,7 @@ export const getGoogleAuthUrl = async () => {
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
     redirect_uri: REDIRECT_URI,
-    response_type: 'id_token token', // Get ID token directly
+    response_type: 'id_token token',
     scope: 'openid email profile',
     nonce: Date.now().toString()
   });
@@ -32,33 +20,10 @@ export const getGoogleAuthUrl = async () => {
   return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 };
 
-// Handle Google OAuth callback
-export const handleGoogleCallback = async (codeOrToken) => {
+// Handle Google OAuth callback - ID token validation only
+export const handleGoogleCallback = async () => {
   try {
-    // Try backend first if we have an authorization code
-    if (codeOrToken && !codeOrToken.includes('.')) {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/google/callback`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            code: codeOrToken,
-            redirectUri: REDIRECT_URI
-          })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          return data;
-        }
-      } catch (backendError) {
-        console.log('Backend not available, trying ID token validation');
-      }
-    }
-
-    // Handle ID token from URL fragment
+    // Get ID token from URL fragment
     const urlParams = new URLSearchParams(window.location.hash.substring(1));
     const idToken = urlParams.get('id_token');
 
@@ -66,52 +31,25 @@ export const handleGoogleCallback = async (codeOrToken) => {
       throw new Error('No ID token received from Google');
     }
 
-    // Try to validate ID token with backend
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken })
-      });
+    // Validate ID token with backend
+    const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ idToken })
+    });
 
-      if (response.ok) {
-        const data = await response.json();
-        return {
-          success: true,
-          user: data.user,
-          sessionToken: data.sessionToken
-        };
-      }
-    } catch (backendError) {
-      console.log('Backend validation failed, using frontend-only mode');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Backend validation failed');
     }
 
-    // Fallback: Frontend-only mode (development)
-    console.warn('⚠️ Using frontend-only auth - backend validation recommended for production');
-
-    // Decode the JWT ID token (basic decoding, not verification)
-    const tokenParts = idToken.split('.');
-    if (tokenParts.length !== 3) {
-      throw new Error('Invalid ID token format');
-    }
-
-    const payload = JSON.parse(atob(tokenParts[1]));
-
-    // Create user object from ID token
-    const user = {
-      id: `google_${payload.sub}`,
-      email: payload.email,
-      name: payload.name,
-      avatar: payload.picture,
-      createdAt: new Date().toISOString()
-    };
-
+    const data = await response.json();
     return {
       success: true,
-      user,
-      sessionToken: null // No backend session in fallback mode
+      user: data.user,
+      sessionToken: data.sessionToken
     };
   } catch (error) {
     console.error('OAuth callback error:', error);
