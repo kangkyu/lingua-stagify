@@ -70,19 +70,21 @@ The authentication flow (Frontend-Only):
 ## Troubleshooting
 
 ### "Client ID not found" error
-- Make sure your Builder.io environment variables are set correctly
-- Restart both servers after changing environment variables
+- Make sure your `VITE_GOOGLE_CLIENT_ID` is set in Builder.io environment variables
+- Restart the development server after changing environment variables
+- Check that the environment variable starts with `VITE_` prefix
 
 ### Redirect URI mismatch
-- Ensure the redirect URI in your Google Console matches exactly: `http://localhost:5173/auth/callback`
-- The redirect URI is automatically constructed as `CLIENT_URL + /auth/callback`
+- Ensure the redirect URI in your Google Console matches exactly:
+  - Development: `http://localhost:5173/auth/callback`
+  - Production: `https://your-domain.com/auth/callback`
+- The redirect URI is automatically constructed as `window.location.origin + /auth/callback`
 
-### API connection errors
-- Make sure the API server is running on port 3001
-- Check that `VITE_API_URL` points to the correct API server URL
-- Verify CORS settings allow your frontend domain
+### CORS errors with Google APIs
+- This should not happen since we're calling Google's public APIs directly
+- If you see CORS errors, make sure you're not behind a corporate firewall or proxy
 
-### Database errors
-- Ensure your `DATABASE_URL` is correct
-- Make sure the database is running and accessible
-- Run `npm run db:push` to sync the schema
+### Authentication fails silently
+- Check browser console for error messages
+- Verify your Google Client ID is correct and active
+- Make sure your Google Cloud project has the necessary APIs enabled
