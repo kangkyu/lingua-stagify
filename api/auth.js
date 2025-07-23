@@ -86,10 +86,15 @@ app.post('/api/auth/validate-token', async (req, res) => {
       sessionToken
     });
   } catch (error) {
-    console.error('Token validation error:', error);
+    console.error('❌ Token validation error details:');
+    console.error('- Error type:', error.constructor.name);
+    console.error('- Error message:', error.message);
+    console.error('- Full error:', error);
+
     res.status(401).json({
       success: false,
-      error: 'Invalid token or authentication failed'
+      error: 'Invalid token or authentication failed',
+      details: error.message // Include error details for debugging
     });
   }
 });
