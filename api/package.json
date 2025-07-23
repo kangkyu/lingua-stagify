@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node auth.js",
     "dev": "node --watch auth.js",
-    "build": "echo 'No build step for API'",
+    "build": "echo 'API functions ready for deployment'",
     "lint": "echo 'No lint configured for API'"
   },
   "dependencies": {
