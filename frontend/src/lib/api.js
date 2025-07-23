@@ -1,42 +1,52 @@
 // API client for database operations
-// Since we're in a browser environment, we'll need to make API calls to a backend
-// For now, we'll use mock data until a backend API is set up
+const API_BASE_URL = '/api';
 
-const API_BASE_URL = '/api'; // This would be your actual API endpoint
+// Helper function to handle API calls
+const apiCall = async (endpoint, options = {}) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    });
 
-// All mock data removed - will use real database data
+    if (!response.ok) {
+      throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+    }
 
-// Simulate API delays
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    return await response.json();
+  } catch (error) {
+    console.error('API call error:', error);
+    throw error;
+  }
+};
 
 export const translationService = {
   async getAllTranslations() {
-    await delay(300); // Simulate network delay
-    return [];
+    return await apiCall('/translations');
   },
 
   async getTranslationsByBook(bookId) {
-    await delay(300);
-    return [];
+    return await apiCall(`/translations/book/${bookId}`);
   }
 };
 
 export const bookService = {
   async getAllBooks() {
-    await delay(300);
-    return [];
+    return await apiCall('/books');
   },
 
   async getBookById(id) {
-    await delay(300);
-    return null;
+    return await apiCall(`/books/${id}`);
   }
 };
 
 export const userService = {
   async getUserBookmarks(userId) {
-    await delay(300);
-    // Mock user bookmarks - in a real app, this would be filtered by userId
+    // TODO: Implement user bookmarks API endpoint
+    // For now return empty arrays until backend endpoint is created
     return {
       translations: [],
       books: []
