@@ -12,54 +12,9 @@ const Books = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // Mock data for now
-    setBooks([
-      {
-        id: 1,
-        title: 'Pride and Prejudice',
-        author: 'Jane Austen',
-        description: 'Classic 19th-century novel exploring themes of love, marriage, and social class in Regency England',
-        sourceLanguage: 'English',
-        targetLanguage: 'Spanish',
-        coverImageUrl: null,
-        translationsCount: 89,
-        contributorsCount: 12,
-        isPublic: true,
-        tags: ['classic', 'literature', 'romance'],
-        createdBy: 'Literary Translation Society',
-        createdDate: '2023-11-20'
-      },
-      {
-        id: 2,
-        title: 'Basic Spanish Conversations',
-        author: 'Jane Smith',
-        description: 'Essential phrases and conversations for Spanish learners',
-        sourceLanguage: 'English',
-        targetLanguage: 'Spanish',
-        coverImageUrl: null,
-        translationsCount: 25,
-        contributorsCount: 3,
-        isPublic: true,
-        tags: ['beginner', 'conversation', 'spanish'],
-        createdBy: 'Jane Smith',
-        createdDate: '2024-01-01'
-      },
-      {
-        id: 3,
-        title: 'Business French',
-        author: 'Michel Dubois',
-        description: 'Professional French vocabulary and expressions',
-        sourceLanguage: 'English',
-        targetLanguage: 'French',
-        coverImageUrl: null,
-        translationsCount: 45,
-        contributorsCount: 5,
-        isPublic: true,
-        tags: ['business', 'professional', 'french'],
-        createdBy: 'Michel Dubois',
-        createdDate: '2023-12-15'
-      }
-    ]);
+    // TODO: Fetch books from database
+    // For now, starting with empty array until database integration is complete
+    setBooks([]);
   }, []);
 
   const filteredBooks = books.filter(book =>
