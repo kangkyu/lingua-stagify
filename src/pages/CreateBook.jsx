@@ -29,7 +29,8 @@ const CreateBook = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Book created:', formData);
+    // TODO: Implement book creation API call
+    // Handle form submission logic here
   };
 
   const languages = [
