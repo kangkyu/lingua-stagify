@@ -11,13 +11,6 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 const PORT = process.env.PORT || 3001;
 
-// Debug: Log environment variables (without secrets)
-console.log('🔧 Backend Environment Check:');
-console.log('- GOOGLE_CLIENT_ID:', GOOGLE_CLIENT_ID ? 'Set ✅' : 'Missing ❌');
-console.log('- GOOGLE_CLIENT_SECRET:', GOOGLE_CLIENT_SECRET ? 'Set ✅' : 'Missing ❌');
-console.log('- CLIENT_URL:', CLIENT_URL);
-console.log('- PORT:', PORT);
-
 // Middleware
 app.use(cors({
   origin: CLIENT_URL,
@@ -35,16 +28,8 @@ app.post('/api/auth/validate-token', async (req, res) => {
     }
 
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      console.log('❌ OAuth validation failed in /validate-token:');
-      console.log('- GOOGLE_CLIENT_ID present:', !!GOOGLE_CLIENT_ID);
-      console.log('- GOOGLE_CLIENT_SECRET present:', !!GOOGLE_CLIENT_SECRET);
       return res.status(500).json({ error: 'Google OAuth not configured on server' });
     }
-
-    // Debug: Log token details (first 20 chars only for security)
-    console.log('🔍 ID Token validation attempt:');
-    console.log('- Token preview:', idToken.substring(0, 20) + '...');
-    console.log('- Client ID for verification:', GOOGLE_CLIENT_ID);
 
     // Verify ID token with Google
     const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -54,10 +39,6 @@ app.post('/api/auth/validate-token', async (req, res) => {
     });
 
     const payload = ticket.getPayload();
-
-    console.log('✅ Token verified successfully');
-    console.log('- User email:', payload.email);
-    console.log('- User name:', payload.name);
 
     if (!payload) {
       throw new Error('Invalid ID token');
@@ -74,23 +55,16 @@ app.post('/api/auth/validate-token', async (req, res) => {
     // Generate session token
     const sessionToken = `session_${payload.sub}_${Date.now()}`;
 
-    console.log('✅ User authenticated:', user.email);
-
     res.json({
       success: true,
       user,
       sessionToken
     });
   } catch (error) {
-    console.error('❌ Token validation error details:');
-    console.error('- Error type:', error.constructor.name);
-    console.error('- Error message:', error.message);
-    console.error('- Full error:', error);
-
+    console.error('Token validation error:', error.message);
     res.status(401).json({
       success: false,
-      error: 'Invalid token or authentication failed',
-      details: error.message // Include error details for debugging
+      error: 'Invalid token or authentication failed'
     });
   }
 });
@@ -240,7 +214,7 @@ app.use((error, req, res, next) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Backend API server running on port ${PORT}`);
+  console.log(`🚀 API server running on port ${PORT}`);
 });
 
 export default app;
