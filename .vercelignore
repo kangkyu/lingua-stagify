@@ -33,10 +33,6 @@ coverage
 *.tgz
 *.tar.gz
 
-# Keep the old Express server but ignore it for Vercel deployment
-api/auth.js
-api/README.md
-
 # Workspace build outputs
 frontend/dist
 frontend/build
