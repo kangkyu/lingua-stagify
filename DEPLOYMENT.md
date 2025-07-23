@@ -21,10 +21,11 @@
 - Outputs to `dist/` directory
 - Served as static files with SPA routing
 
-### Backend (Serverless Functions)
-- API functions in `api/` directory (pre-created)
+### Backend (Serverless Functions Only)
+- Pure serverless functions in `api/` directory
+- No Express server - fully serverless
 - Automatically deployed as Vercel serverless functions
-- No Express server needed on Vercel
+- Local development uses `vercel dev`
 
 ### Monorepo Benefits
 - Single deployment for frontend + backend
