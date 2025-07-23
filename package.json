@@ -8,12 +8,14 @@
     "api"
   ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "turbo dev",
+    "build": "turbo build",
     "lint": "eslint .",
     "preview": "vite preview",
     "dev:all": "turbo dev",
     "build:all": "turbo build",
+    "frontend:dev": "vite",
+    "frontend:build": "vite build",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
     "db:studio": "prisma studio",
