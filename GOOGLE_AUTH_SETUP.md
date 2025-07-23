@@ -38,32 +38,10 @@ VITE_GOOGLE_CLIENT_ID="your_actual_google_client_id_here"
 
 ⚠️ **Important**: Never commit your actual Google credentials to version control.
 
-## Step 3: Set Up Database
+## Step 3: Test the Authentication
 
-1. Make sure your PostgreSQL database is running
-2. Push the Prisma schema:
+1. Start the development server:
    ```bash
-   npm run db:push
-   ```
-
-3. (Optional) Seed the database:
-   ```bash
-   npm run db:seed
-   ```
-
-## Step 4: Test the Authentication
-
-1. Start both the API server and frontend:
-   ```bash
-   npm run dev:full
-   ```
-
-   Or run them separately:
-   ```bash
-   # Terminal 1 - API server
-   npm run api
-
-   # Terminal 2 - Frontend
    npm run dev
    ```
 
