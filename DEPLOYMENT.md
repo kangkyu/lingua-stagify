@@ -39,12 +39,12 @@
 # Install dependencies
 npm install
 
-# Start both frontend and backend
+# Start both frontend and serverless API
 npm run dev:all
 
 # Or start individually
-npm run frontend:dev  # Frontend only
-npm run api:dev       # Backend only
+npm run frontend:dev  # Frontend only (port 5173)
+npm run api:dev       # Serverless API only (port 3001)
 ```
 
 ## API Endpoints (Production)
