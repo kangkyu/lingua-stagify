@@ -34,17 +34,9 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      // Mock authentication for development
-      // Replace with actual Google OAuth implementation when ready
-      const mockUser = {
-        id: Date.now().toString(),
-        email: 'user@example.com',
-        name: 'Demo User',
-        picture: null
-      };
-
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
+      // TODO: Implement actual Google OAuth authentication
+      // This will be connected to the authentication system
+      console.log('Google OAuth sign-in not yet implemented');
 
     } catch (error) {
       console.error('Sign-in failed:', error);
