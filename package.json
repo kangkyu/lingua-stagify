@@ -18,7 +18,6 @@
     "frontend:dev": "turbo dev --filter=frontend",
     "frontend:build": "turbo build --filter=frontend",
     "api:dev": "turbo dev --filter=api",
-    "api:start": "turbo start --filter=api",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
     "db:studio": "prisma studio"
