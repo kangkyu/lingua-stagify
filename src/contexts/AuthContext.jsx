@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
       window.location.href = authUrl;
     } catch (error) {
       console.error('Sign-in failed:', error);
+      alert(`Sign-in failed: ${error.message}`);
       setLoading(false);
     }
   };
