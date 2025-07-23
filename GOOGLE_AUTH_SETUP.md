@@ -73,29 +73,21 @@ VITE_GOOGLE_CLIENT_ID="your_actual_google_client_id_here"
 
 ## How It Works
 
-The authentication flow:
+The authentication flow (Frontend-Only):
 
 1. User clicks "Sign In with Google"
-2. Frontend requests auth URL from backend API
+2. Frontend generates Google OAuth URL directly
 3. User is redirected to Google's OAuth consent screen
 4. After consent, Google redirects back to `/auth/callback` with an authorization code
-5. Frontend sends the code to backend API
-6. Backend exchanges code for user info and creates/updates user in database
-7. User data is returned and stored in frontend
+5. Frontend exchanges the code directly with Google for user info
+6. User data is stored in localStorage for session management
 
 ## Architecture
 
-- **Backend API**: Express server handling OAuth flow securely
-- **Database**: PostgreSQL with Prisma ORM
-- **Frontend**: React app consuming the API
-- **Authentication**: Server-side OAuth with client-side session management
-
-## API Endpoints
-
-- `GET /api/auth/google` - Get Google OAuth URL
-- `POST /api/auth/callback` - Handle OAuth callback
-- `GET /api/auth/verify/:userId` - Verify user session
-- `GET /api/health` - Health check
+- **Frontend-Only**: No backend required for authentication
+- **Client-Side OAuth**: Direct integration with Google's OAuth APIs
+- **LocalStorage**: User session persistence in browser
+- **Scalable**: Perfect for static deployments (Vercel, Netlify, Fly.dev)
 
 ## Troubleshooting
 
