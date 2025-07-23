@@ -14,16 +14,23 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sessionToken, setSessionToken] = useState(null);
 
-  // Initialize user from localStorage on app load
+  // Initialize user and session from localStorage on app load
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
+    const savedSessionToken = localStorage.getItem('sessionToken');
+
     if (savedUser) {
       try {
         setUser(JSON.parse(savedUser));
+        if (savedSessionToken) {
+          setSessionToken(savedSessionToken);
+        }
       } catch (error) {
         console.error('Failed to parse saved user:', error);
         localStorage.removeItem('user');
+        localStorage.removeItem('sessionToken');
       }
     }
     setLoading(false);
@@ -50,6 +57,13 @@ export const AuthProvider = ({ children }) => {
       if (result.success) {
         setUser(result.user);
         localStorage.setItem('user', JSON.stringify(result.user));
+
+        // Store session token if provided by backend
+        if (result.sessionToken) {
+          setSessionToken(result.sessionToken);
+          localStorage.setItem('sessionToken', result.sessionToken);
+        }
+
         return { success: true };
       } else {
         return { success: false, error: result.error };
@@ -65,7 +79,9 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     try {
       setUser(null);
+      setSessionToken(null);
       localStorage.removeItem('user');
+      localStorage.removeItem('sessionToken');
     } catch (error) {
       console.error('Sign out failed:', error);
     }
@@ -74,6 +90,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    sessionToken,
     signInWithGoogle,
     signOut,
     handleAuthCallback,
