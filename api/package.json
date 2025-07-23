@@ -1,12 +1,14 @@
 {
-  "name": "lingua-stagify-api",
+  "name": "api",
   "version": "1.0.0",
   "type": "module",
   "description": "Backend API for Lingua Stagify authentication",
   "main": "auth.js",
   "scripts": {
     "start": "node auth.js",
-    "dev": "node --watch auth.js"
+    "dev": "node --watch auth.js",
+    "build": "echo 'No build step for API'",
+    "lint": "echo 'No lint configured for API'"
   },
   "dependencies": {
     "@prisma/client": "^6.12.0",
