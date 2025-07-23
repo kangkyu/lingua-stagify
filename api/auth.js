@@ -15,6 +15,13 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 const PORT = process.env.PORT || 3001;
 
+// Debug: Log environment variables (without secrets)
+console.log('🔧 Backend Environment Check:');
+console.log('- GOOGLE_CLIENT_ID:', GOOGLE_CLIENT_ID ? 'Set ✅' : 'Missing ❌');
+console.log('- GOOGLE_CLIENT_SECRET:', GOOGLE_CLIENT_SECRET ? 'Set ✅' : 'Missing ❌');
+console.log('- CLIENT_URL:', CLIENT_URL);
+console.log('- PORT:', PORT);
+
 // Middleware
 app.use(cors({
   origin: CLIENT_URL,
