@@ -5,16 +5,31 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Plus, BookOpen, Users } from 'lucide-react';
+import { bookService } from '@/lib/database';
 
 const Books = () => {
   const { user } = useAuth();
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // TODO: Fetch books from database
-    // For now, starting with empty array until database integration is complete
-    setBooks([]);
+    const fetchBooks = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await bookService.getAllBooks();
+        setBooks(data);
+      } catch (err) {
+        console.error('Failed to fetch books:', err);
+        setError('Failed to load books. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
   }, []);
 
   const filteredBooks = books.filter(book =>
@@ -48,16 +63,38 @@ const Books = () => {
         />
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="text-center py-12">
+          <p className="text-slate-500">Loading books...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="text-center py-12">
+          <p className="text-red-500">{error}</p>
+          <Button
+            variant="outline"
+            onClick={() => window.location.reload()}
+            className="mt-4"
+          >
+            Try Again
+          </Button>
+        </div>
+      )}
+
       {/* Books Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {!loading && !error && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredBooks.map((book) => (
           <Link key={book.id} to={`/books/${book.id}`}>
             <Card className="hover:shadow-md transition-shadow h-full">
               <CardHeader>
                 <div className="w-full h-48 bg-slate-100 rounded-lg flex items-center justify-center mb-4">
-                  {book.coverImageUrl ? (
-                    <img 
-                      src={book.coverImageUrl} 
+                  {book.coverImage ? (
+                    <img
+                      src={book.coverImage}
                       alt={book.title}
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -74,18 +111,16 @@ const Books = () => {
                 </p>
                 
                 <div className="text-xs text-slate-500">
-                  {book.sourceLanguage} → {book.targetLanguage}
+                  Language: {book.language}
                 </div>
 
                 <div className="flex gap-1 flex-wrap">
-                  {book.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-xs"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-xs">
+                    {book.language}
+                  </span>
+                  <span className="px-2 py-1 bg-teal-100 text-teal-600 rounded-md text-xs">
+                    {book.translationsCount} translations
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-slate-500 pt-2">
@@ -93,18 +128,19 @@ const Books = () => {
                     <span>{book.translationsCount} translations</span>
                     <div className="flex items-center">
                       <Users className="w-3 h-3 mr-1" />
-                      {book.contributorsCount}
+                      {book.bookmarksCount} bookmarks
                     </div>
                   </div>
-                  <span>{book.createdDate}</span>
+                  <span>{new Date(book.createdAt).toLocaleDateString()}</span>
                 </div>
               </CardContent>
             </Card>
           </Link>
         ))}
-      </div>
+        </div>
+      )}
 
-      {filteredBooks.length === 0 && (
+      {!loading && !error && filteredBooks.length === 0 && (
         <div className="text-center py-12">
           <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-500">No books found matching your search.</p>

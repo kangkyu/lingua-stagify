@@ -4,25 +4,71 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Users, Plus, Languages } from 'lucide-react';
+import { bookService } from '@/lib/database';
 
 const BookDetail = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const [book, setBook] = useState(null);
   const [translations, setTranslations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // TODO: Fetch book and translations from database based on ID
-    // For now, setting null until database integration is complete
-    setBook(null);
-    setTranslations([]);
+    const fetchBookData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const bookData = await bookService.getBookById(id);
+        if (bookData) {
+          setBook(bookData);
+          setTranslations(bookData.translations || []);
+        } else {
+          setError('Book not found');
+        }
+      } catch (err) {
+        console.error('Failed to fetch book:', err);
+        setError('Failed to load book. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchBookData();
+    }
   }, [id]);
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+        <p className="text-slate-500">Loading book...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+        <p className="text-red-500">{error}</p>
+        <Button
+          variant="outline"
+          onClick={() => window.location.reload()}
+          className="mt-4"
+        >
+          Try Again
+        </Button>
+      </div>
+    );
+  }
 
   if (!book) {
     return (
       <div className="text-center py-12">
         <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-        <p className="text-slate-500">Loading book...</p>
+        <p className="text-slate-500">Book not found.</p>
       </div>
     );
   }
@@ -34,9 +80,9 @@ const BookDetail = () => {
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="w-32 h-40 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-              {book.coverImageUrl ? (
-                <img 
-                  src={book.coverImageUrl} 
+              {book.coverImage ? (
+                <img
+                  src={book.coverImage}
                   alt={book.title}
                   className="w-full h-full object-cover rounded-lg"
                 />
@@ -53,27 +99,25 @@ const BookDetail = () => {
               <div className="flex items-center space-x-4 text-sm text-slate-600 mb-4">
                 <div className="flex items-center">
                   <Languages className="w-4 h-4 mr-1" />
-                  {book.sourceLanguage} → {book.targetLanguage}
+                  {book.language}
                 </div>
                 <div className="flex items-center">
                   <BookOpen className="w-4 h-4 mr-1" />
-                  {book.translationsCount} translations
+                  {book.translations ? book.translations.length : 0} translations
                 </div>
                 <div className="flex items-center">
                   <Users className="w-4 h-4 mr-1" />
-                  {book.contributorsCount} contributors
+                  {book.bookmarksCount} bookmarks
                 </div>
               </div>
               
               <div className="flex gap-2 flex-wrap mb-4">
-                {book.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm"
-                  >
-                    {tag}
-                  </span>
-                ))}
+                <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm">
+                  {book.language}
+                </span>
+                <span className="px-3 py-1 bg-teal-100 text-teal-600 rounded-full text-sm">
+                  Classic Literature
+                </span>
               </div>
               
               {user && (

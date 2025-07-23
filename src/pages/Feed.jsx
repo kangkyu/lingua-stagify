@@ -4,17 +4,32 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Heart, MessageCircle, Bookmark, Search, Users } from 'lucide-react';
+import { translationService } from '@/lib/database';
 
 const Feed = () => {
   const { user } = useAuth();
   const [translations, setTranslations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('recent');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // TODO: Fetch translations from database
-    // For now, starting with empty array until database integration is complete
-    setTranslations([]);
+    const fetchTranslations = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await translationService.getAllTranslations();
+        setTranslations(data);
+      } catch (err) {
+        console.error('Failed to fetch translations:', err);
+        setError('Failed to load translations. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTranslations();
   }, []);
 
   const filteredTranslations = translations.filter(translation =>
@@ -110,8 +125,30 @@ const Feed = () => {
         </div>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="text-center py-12">
+          <p className="text-slate-500">Loading translations...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="text-center py-12">
+          <p className="text-red-500">{error}</p>
+          <Button
+            variant="outline"
+            onClick={() => window.location.reload()}
+            className="mt-4"
+          >
+            Try Again
+          </Button>
+        </div>
+      )}
+
       {/* Translations List */}
-      <div className="space-y-6">
+      {!loading && !error && (
+        <div className="space-y-6">
         {sortedTranslationGroups.map((translationGroup, groupIndex) => {
           const firstTranslation = translationGroup[0];
           const isGrouped = translationGroup.length > 1;
@@ -224,9 +261,10 @@ const Feed = () => {
             </Card>
           );
         })}
-      </div>
+        </div>
+      )}
 
-      {sortedTranslationGroups.length === 0 && (
+      {!loading && !error && sortedTranslationGroups.length === 0 && (
         <div className="text-center py-12">
           <p className="text-slate-500">No translations found matching your search.</p>
         </div>
