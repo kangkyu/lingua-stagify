@@ -3,8 +3,20 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 const REDIRECT_URI = `${window.location.origin}/auth/callback`;
 
-// Generate Google OAuth URL
+// Generate Google OAuth URL - can be done frontend or backend
 export const getGoogleAuthUrl = async () => {
+  try {
+    // Try to get from backend first (preferred for consistency)
+    const response = await fetch(`${API_BASE_URL}/api/auth/google/url`);
+    if (response.ok) {
+      const data = await response.json();
+      return data.authUrl;
+    }
+  } catch (error) {
+    console.log('Backend not available, generating auth URL on frontend');
+  }
+
+  // Fallback to frontend generation if backend unavailable
   if (!GOOGLE_CLIENT_ID) {
     throw new Error('Google Client ID not configured. Please set VITE_GOOGLE_CLIENT_ID environment variable.');
   }
