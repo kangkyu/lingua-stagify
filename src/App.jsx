@@ -9,6 +9,7 @@ import Profile from '@/pages/Profile';
 import Bookmarks from '@/pages/Bookmarks';
 import CreateBook from '@/pages/CreateBook';
 import BookDetail from '@/pages/BookDetail';
+import AuthCallback from '@/pages/AuthCallback';
 
 function App() {
   return (
