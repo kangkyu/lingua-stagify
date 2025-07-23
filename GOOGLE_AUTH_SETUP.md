@@ -70,10 +70,10 @@ The authentication flow (Frontend-Only):
 
 ## Troubleshooting
 
-### "Client ID not found" error
-- Make sure your `VITE_GOOGLE_CLIENT_ID` is set in Builder.io environment variables
+### "Google OAuth not configured" error
+- Make sure both `VITE_GOOGLE_CLIENT_ID` and `VITE_GOOGLE_CLIENT_SECRET` are set in Builder.io environment variables
 - Restart the development server after changing environment variables
-- Check that the environment variable starts with `VITE_` prefix
+- Check that both environment variables start with `VITE_` prefix
 
 ### Redirect URI mismatch
 - Ensure the redirect URI in your Google Console matches exactly:
