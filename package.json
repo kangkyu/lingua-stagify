@@ -19,17 +19,14 @@
     "build:all": "turbo build",
     "frontend:dev": "turbo dev --filter=frontend",
     "frontend:build": "turbo build --filter=frontend",
-    "db:push": "prisma db push",
-    "db:seed": "node prisma/seed.js",
-    "db:studio": "prisma studio"
+    "db:push": "cd api && npx prisma db push",
+    "db:seed": "cd api && node prisma/seed.js",
+    "db:studio": "cd api && npx prisma studio"
   },
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "cd api && node prisma/seed.js"
   },
-  "dependencies": {
-    "@prisma/client": "^6.12.0",
-    "prisma": "^6.12.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "turbo": "^2.5.5",
     "vercel": "^32.0.0"
