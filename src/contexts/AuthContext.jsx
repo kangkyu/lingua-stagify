@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
-      const authUrl = getGoogleAuthUrl();
+      const authUrl = await getGoogleAuthUrl();
       // Redirect to Google OAuth
       window.location.href = authUrl;
     } catch (error) {
