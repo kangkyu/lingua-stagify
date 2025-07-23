@@ -3,7 +3,7 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 const REDIRECT_URI = `${window.location.origin}/auth/callback`;
 
-// Generate Google OAuth URL - can be done frontend or backend
+// Generate Google OAuth URL - using implicit flow for frontend-only
 export const getGoogleAuthUrl = async () => {
   try {
     // Try to get from backend first (preferred for consistency)
@@ -13,10 +13,10 @@ export const getGoogleAuthUrl = async () => {
       return data.authUrl;
     }
   } catch (error) {
-    console.log('Backend not available, generating auth URL on frontend');
+    console.log('Backend not available, using frontend-only auth');
   }
 
-  // Fallback to frontend generation if backend unavailable
+  // Frontend-only: Use implicit flow to get ID token directly
   if (!GOOGLE_CLIENT_ID) {
     throw new Error('Google Client ID not configured. Please set VITE_GOOGLE_CLIENT_ID environment variable.');
   }
@@ -24,10 +24,9 @@ export const getGoogleAuthUrl = async () => {
   const params = new URLSearchParams({
     client_id: GOOGLE_CLIENT_ID,
     redirect_uri: REDIRECT_URI,
-    response_type: 'code',
+    response_type: 'id_token token', // Get ID token directly
     scope: 'openid email profile',
-    access_type: 'offline',
-    include_granted_scopes: 'true'
+    nonce: Date.now().toString()
   });
 
   return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
@@ -63,7 +62,7 @@ export const handleGoogleCallback = async (code) => {
 
     // Fallback: Create a mock user for frontend-only mode
     // In production, you would need the backend for security
-    console.warn('⚠️ Frontend-only auth - for development only!');
+    console.warn('⚠�� Frontend-only auth - for development only!');
 
     // Create a simple user object without actual Google token exchange
     const user = {
