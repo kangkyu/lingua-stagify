@@ -19,6 +19,32 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Generate Google OAuth URL
+app.get('/api/auth/google/url', (req, res) => {
+  try {
+    if (!GOOGLE_CLIENT_ID) {
+      return res.status(500).json({ error: 'Google OAuth not configured on server' });
+    }
+
+    const redirectUri = `${CLIENT_URL}/auth/callback`;
+    const params = new URLSearchParams({
+      client_id: GOOGLE_CLIENT_ID,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'openid email profile',
+      access_type: 'offline',
+      include_granted_scopes: 'true'
+    });
+
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+
+    res.json({ authUrl });
+  } catch (error) {
+    console.error('Error generating auth URL:', error);
+    res.status(500).json({ error: 'Failed to generate authentication URL' });
+  }
+});
+
 // Google OAuth callback handler
 app.post('/api/auth/google/callback', async (req, res) => {
   try {
