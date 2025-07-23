@@ -24,7 +24,7 @@
     "db:studio": "cd api && npx prisma studio"
   },
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "cd api && node prisma/seed.js"
   },
   "dependencies": {},
   "devDependencies": {
