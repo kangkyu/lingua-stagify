@@ -14,6 +14,7 @@ const AuthCallback = () => {
       const code = searchParams.get('code');
       const error = searchParams.get('error');
 
+      // Check for error in query params
       if (error) {
         setStatus('error');
         setError('Authentication was cancelled or failed');
@@ -21,9 +22,12 @@ const AuthCallback = () => {
         return;
       }
 
-      if (!code) {
+      // Check for ID token in URL fragment (implicit flow)
+      const hasTokenInFragment = window.location.hash.includes('id_token=');
+
+      if (!code && !hasTokenInFragment) {
         setStatus('error');
-        setError('No authorization code received');
+        setError('No authorization code or token received');
         setTimeout(() => navigate('/'), 3000);
         return;
       }
