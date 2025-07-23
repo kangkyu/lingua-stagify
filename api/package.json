@@ -1,7 +1,6 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "type": "module",
   "description": "Serverless API functions for Lingua Stagify",
   "scripts": {
     "dev": "echo 'API functions ready - use Vercel CLI from root for local testing'",
