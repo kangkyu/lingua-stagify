@@ -9,23 +9,32 @@ import Profile from '@/pages/Profile';
 import Bookmarks from '@/pages/Bookmarks';
 import CreateBook from '@/pages/CreateBook';
 import BookDetail from '@/pages/BookDetail';
+import AuthCallback from '@/pages/AuthCallback';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Feed />} />
-            <Route path="/feed" element={<Feed />} />
-            <Route path="/books" element={<Books />} />
-            <Route path="/books/:id" element={<BookDetail />} />
-            <Route path="/share" element={<Share />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/bookmarks" element={<Bookmarks />} />
-            <Route path="/create-book" element={<CreateBook />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          {/* Auth callback route without layout */}
+          <Route path="/auth/callback" element={<AuthCallback />} />
+
+          {/* Main app routes with layout */}
+          <Route path="/*" element={
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Feed />} />
+                <Route path="/feed" element={<Feed />} />
+                <Route path="/books" element={<Books />} />
+                <Route path="/books/:id" element={<BookDetail />} />
+                <Route path="/share" element={<Share />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/bookmarks" element={<Bookmarks />} />
+                <Route path="/create-book" element={<CreateBook />} />
+              </Routes>
+            </Layout>
+          } />
+        </Routes>
       </Router>
     </AuthProvider>
   );
