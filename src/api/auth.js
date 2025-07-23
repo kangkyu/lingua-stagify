@@ -20,7 +20,7 @@ export const getGoogleAuthUrl = async () => {
   return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 };
 
-// Handle Google OAuth callback - ID token validation
+// Handle Google OAuth callback - backend validation only
 export const handleGoogleCallback = async () => {
   try {
     // Get ID token from URL fragment
@@ -31,57 +31,25 @@ export const handleGoogleCallback = async () => {
       throw new Error('No ID token received from Google');
     }
 
-    // Try backend validation first
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken })
-      });
+    // Validate ID token with backend
+    const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ idToken })
+    });
 
-      if (response.ok) {
-        const data = await response.json();
-        return {
-          success: true,
-          user: data.user,
-          sessionToken: data.sessionToken
-        };
-      }
-    } catch (backendError) {
-      console.log('🔄 Backend not available, using frontend-only validation');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Backend validation failed');
     }
 
-    // Fallback: Frontend-only ID token parsing for production
-    console.log('⚠️ Using frontend-only auth - deploy backend for full security');
-
-    // Decode JWT payload (basic parsing - not cryptographic verification)
-    const tokenParts = idToken.split('.');
-    if (tokenParts.length !== 3) {
-      throw new Error('Invalid ID token format');
-    }
-
-    const payload = JSON.parse(atob(tokenParts[1]));
-
-    // Basic validation
-    if (!payload.email || !payload.aud || payload.aud !== GOOGLE_CLIENT_ID) {
-      throw new Error('Invalid token payload');
-    }
-
-    // Create user from token
-    const user = {
-      id: `google_${payload.sub}`,
-      email: payload.email,
-      name: payload.name,
-      avatar: payload.picture,
-      createdAt: new Date().toISOString()
-    };
-
+    const data = await response.json();
     return {
       success: true,
-      user,
-      sessionToken: null // No backend session in fallback mode
+      user: data.user,
+      sessionToken: data.sessionToken
     };
   } catch (error) {
     console.error('OAuth callback error:', error);
