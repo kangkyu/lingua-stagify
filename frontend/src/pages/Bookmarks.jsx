@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Bookmark as BookmarkIcon, BookOpen, Heart, MessageCircle } from 'lucide-react';
-import { userService } from '@/lib/database';
+import { userService } from '@/lib/api';
 
 const Bookmarks = () => {
   const { user } = useAuth();
