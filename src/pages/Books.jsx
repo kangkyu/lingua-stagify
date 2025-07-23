@@ -16,6 +16,21 @@ const Books = () => {
     setBooks([
       {
         id: 1,
+        title: 'Pride and Prejudice',
+        author: 'Jane Austen',
+        description: 'Classic 19th-century novel exploring themes of love, marriage, and social class in Regency England',
+        sourceLanguage: 'English',
+        targetLanguage: 'Spanish',
+        coverImageUrl: null,
+        translationsCount: 89,
+        contributorsCount: 12,
+        isPublic: true,
+        tags: ['classic', 'literature', 'romance'],
+        createdBy: 'Literary Translation Society',
+        createdDate: '2023-11-20'
+      },
+      {
+        id: 2,
         title: 'Basic Spanish Conversations',
         author: 'Jane Smith',
         description: 'Essential phrases and conversations for Spanish learners',
@@ -30,7 +45,7 @@ const Books = () => {
         createdDate: '2024-01-01'
       },
       {
-        id: 2,
+        id: 3,
         title: 'Business French',
         author: 'Michel Dubois',
         description: 'Professional French vocabulary and expressions',
