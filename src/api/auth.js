@@ -54,17 +54,42 @@ export const handleGoogleCallback = async (codeOrToken) => {
           return data;
         }
       } catch (backendError) {
-        console.log('Backend not available, trying frontend-only auth');
+        console.log('Backend not available, trying ID token validation');
       }
     }
 
-    // Frontend-only: Handle ID token from URL fragment
+    // Handle ID token from URL fragment
     const urlParams = new URLSearchParams(window.location.hash.substring(1));
     const idToken = urlParams.get('id_token');
 
     if (!idToken) {
       throw new Error('No ID token received from Google');
     }
+
+    // Try to validate ID token with backend
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          success: true,
+          user: data.user,
+          sessionToken: data.sessionToken
+        };
+      }
+    } catch (backendError) {
+      console.log('Backend validation failed, using frontend-only mode');
+    }
+
+    // Fallback: Frontend-only mode (development)
+    console.warn('⚠️ Using frontend-only auth - backend validation recommended for production');
 
     // Decode the JWT ID token (basic decoding, not verification)
     const tokenParts = idToken.split('.');
@@ -85,7 +110,8 @@ export const handleGoogleCallback = async (codeOrToken) => {
 
     return {
       success: true,
-      user
+      user,
+      sessionToken: null // No backend session in fallback mode
     };
   } catch (error) {
     console.error('OAuth callback error:', error);
