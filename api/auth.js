@@ -38,7 +38,10 @@ app.post('/api/auth/validate-token', async (req, res) => {
       return res.status(400).json({ error: 'ID token is required' });
     }
 
-    if (!GOOGLE_CLIENT_ID) {
+    if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+      console.log('❌ OAuth validation failed in /validate-token:');
+      console.log('- GOOGLE_CLIENT_ID present:', !!GOOGLE_CLIENT_ID);
+      console.log('- GOOGLE_CLIENT_SECRET present:', !!GOOGLE_CLIENT_SECRET);
       return res.status(500).json({ error: 'Google OAuth not configured on server' });
     }
 
