@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Languages, Send } from 'lucide-react';
 
 const Share = () => {
@@ -27,8 +28,8 @@ const Share = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Translation submitted:', formData);
+    // TODO: Implement translation submission API call
+    // Handle form submission logic here
   };
 
   return (
@@ -48,8 +49,7 @@ const Share = () => {
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Original Text
               </label>
-              <textarea
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+              <Textarea
                 rows={3}
                 value={formData.originalText}
                 onChange={(e) => setFormData({...formData, originalText: e.target.value})}
@@ -62,8 +62,7 @@ const Share = () => {
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Translation
               </label>
-              <textarea
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+              <Textarea
                 rows={3}
                 value={formData.translatedText}
                 onChange={(e) => setFormData({...formData, translatedText: e.target.value})}

@@ -14,60 +14,40 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Initialize user from localStorage on app load
   useEffect(() => {
-    // Initialize Google Auth
-    initializeGoogleAuth();
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error('Failed to parse saved user:', error);
+        localStorage.removeItem('user');
+      }
+    }
+    setLoading(false);
   }, []);
 
-  const initializeGoogleAuth = async () => {
-    try {
-      // Load Google Auth library
-      await loadGoogleAuthLibrary();
-      
-      // Check if user is already signed in
-      const auth = window.google.accounts.oauth2;
-      // Implementation will be added here
-      
-      setLoading(false);
-    } catch (error) {
-      console.error('Failed to initialize Google Auth:', error);
-      setLoading(false);
-    }
-  };
 
-  const loadGoogleAuthLibrary = () => {
-    return new Promise((resolve, reject) => {
-      if (window.google) {
-        resolve();
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-  };
 
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
-      
-      // Google OAuth implementation will be added here
-      // For now, we'll simulate a successful login
+
+      // Mock authentication for development
+      // Replace with actual Google OAuth implementation when ready
       const mockUser = {
-        id: '123',
+        id: Date.now().toString(),
         email: 'user@example.com',
-        name: 'John Doe',
-        picture: 'https://via.placeholder.com/40'
+        name: 'Demo User',
+        picture: null
       };
-      
+
       setUser(mockUser);
       localStorage.setItem('user', JSON.stringify(mockUser));
-      
+
     } catch (error) {
-      console.error('Google sign-in failed:', error);
+      console.error('Sign-in failed:', error);
     } finally {
       setLoading(false);
     }
@@ -77,24 +57,12 @@ export const AuthProvider = ({ children }) => {
     try {
       setUser(null);
       localStorage.removeItem('user');
-      
-      // Clear Google Auth session
-      if (window.google) {
-        // Implementation will be added here
-      }
     } catch (error) {
       console.error('Sign out failed:', error);
     }
   };
 
-  // Check for existing user session on app load
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
-  }, []);
+
 
   const value = {
     user,

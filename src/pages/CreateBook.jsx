@@ -3,6 +3,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { BookOpen, Save } from 'lucide-react';
 
 const CreateBook = () => {
@@ -29,7 +32,8 @@ const CreateBook = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Book created:', formData);
+    // TODO: Implement book creation API call
+    // Handle form submission logic here
   };
 
   const languages = [
@@ -72,8 +76,7 @@ const CreateBook = () => {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
-              <textarea
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+              <Textarea
                 rows={3}
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -85,27 +88,25 @@ const CreateBook = () => {
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Source Language</label>
-                <select
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                <Select
                   value={formData.sourceLanguage}
                   onChange={(e) => setFormData({...formData, sourceLanguage: e.target.value})}
                 >
                   {languages.map(lang => (
                     <option key={lang} value={lang}>{lang}</option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Target Language</label>
-                <select
-                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                <Select
                   value={formData.targetLanguage}
                   onChange={(e) => setFormData({...formData, targetLanguage: e.target.value})}
                 >
                   {languages.map(lang => (
                     <option key={lang} value={lang}>{lang}</option>
                   ))}
-                </select>
+                </Select>
               </div>
             </div>
 
@@ -119,8 +120,7 @@ const CreateBook = () => {
             </div>
 
             <div className="flex items-center">
-              <input
-                type="checkbox"
+              <Checkbox
                 id="isPublic"
                 checked={formData.isPublic}
                 onChange={(e) => setFormData({...formData, isPublic: e.target.checked})}
