@@ -1,10 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import { GoogleAuth } from 'google-auth-library';
-import { PrismaClient } from '@prisma/client';
 
 const app = express();
-const prisma = new PrismaClient();
+// Removed Prisma for now - add back when database is ready
 
 // Environment variables (secure - server-side only)
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -45,43 +44,22 @@ app.post('/api/auth/validate-token', async (req, res) => {
       throw new Error('Invalid ID token');
     }
 
-    // Create or update user in database
-    let user = await prisma.user.findUnique({
-      where: { email: payload.email }
-    });
+    // Create user object from validated Google data
+    const user = {
+      id: `google_${payload.sub}`,
+      email: payload.email,
+      name: payload.name,
+      avatar: payload.picture
+    };
 
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email: payload.email,
-          name: payload.name,
-          avatar: payload.picture
-        }
-      });
-    } else {
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          name: payload.name,
-          avatar: payload.picture
-        }
-      });
-    }
+    // Generate session token
+    const sessionToken = `session_${payload.sub}_${Date.now()}`;
 
-    // Generate session token (simple approach - in production, use proper JWT)
-    const sessionToken = `session_${user.id}_${Date.now()}`;
-
-    // Store session in database (optional - for session management)
-    // You could create a sessions table, but for simplicity we'll just return the token
+    console.log('✅ User authenticated:', user.email);
 
     res.json({
       success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        avatar: user.avatar
-      },
+      user,
       sessionToken
     });
   } catch (error) {
