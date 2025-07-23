@@ -34,3 +34,4 @@ api/.env
 .turbo/
 src/generated/
 
+.vercel
