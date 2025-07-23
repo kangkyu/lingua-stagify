@@ -27,8 +27,8 @@ const Share = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Translation submitted:', formData);
+    // TODO: Implement translation submission API call
+    // Handle form submission logic here
   };
 
   return (
