@@ -42,8 +42,8 @@ npm install
 npm run dev:all
 
 # Or start individually
-npm run dev        # Frontend only
-npm run api:dev    # Backend only
+npm run frontend:dev  # Frontend only
+npm run api:dev       # Backend only
 ```
 
 ## API Endpoints (Production)
