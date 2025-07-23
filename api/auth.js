@@ -19,6 +19,80 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Validate Google ID Token and create session
+app.post('/api/auth/validate-token', async (req, res) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({ error: 'ID token is required' });
+    }
+
+    if (!GOOGLE_CLIENT_ID) {
+      return res.status(500).json({ error: 'Google OAuth not configured on server' });
+    }
+
+    // Verify ID token with Google
+    const oauth2Client = new GoogleAuth().OAuth2(GOOGLE_CLIENT_ID);
+    const ticket = await oauth2Client.verifyIdToken({
+      idToken: idToken,
+      audience: GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+
+    if (!payload) {
+      throw new Error('Invalid ID token');
+    }
+
+    // Create or update user in database
+    let user = await prisma.user.findUnique({
+      where: { email: payload.email }
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: payload.email,
+          name: payload.name,
+          avatar: payload.picture
+        }
+      });
+    } else {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          name: payload.name,
+          avatar: payload.picture
+        }
+      });
+    }
+
+    // Generate session token (simple approach - in production, use proper JWT)
+    const sessionToken = `session_${user.id}_${Date.now()}`;
+
+    // Store session in database (optional - for session management)
+    // You could create a sessions table, but for simplicity we'll just return the token
+
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar
+      },
+      sessionToken
+    });
+  } catch (error) {
+    console.error('Token validation error:', error);
+    res.status(401).json({
+      success: false,
+      error: 'Invalid token or authentication failed'
+    });
+  }
+});
+
 // Generate Google OAuth URL
 app.get('/api/auth/google/url', (req, res) => {
   try {
