@@ -45,6 +45,11 @@ app.post('/api/auth/validate-token', async (req, res) => {
       return res.status(500).json({ error: 'Google OAuth not configured on server' });
     }
 
+    // Debug: Log token details (first 20 chars only for security)
+    console.log('🔍 ID Token validation attempt:');
+    console.log('- Token preview:', idToken.substring(0, 20) + '...');
+    console.log('- Client ID for verification:', GOOGLE_CLIENT_ID);
+
     // Verify ID token with Google
     const oauth2Client = new GoogleAuth().OAuth2(GOOGLE_CLIENT_ID);
     const ticket = await oauth2Client.verifyIdToken({
@@ -53,6 +58,10 @@ app.post('/api/auth/validate-token', async (req, res) => {
     });
 
     const payload = ticket.getPayload();
+
+    console.log('✅ Token verified successfully');
+    console.log('- User email:', payload.email);
+    console.log('- User name:', payload.name);
 
     if (!payload) {
       throw new Error('Invalid ID token');
