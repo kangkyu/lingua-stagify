@@ -32,13 +32,13 @@ const Feed = () => {
       {
         id: 2,
         originalText: 'Hello, how are you?',
-        translatedText: 'Salut, comment allez-vous?',
+        translatedText: '¡Hola! ¿Cómo te va?',
         sourceLanguage: 'English',
-        targetLanguage: 'French',
+        targetLanguage: 'Spanish',
         context: 'Chapter 1, Page 1',
         bookTitle: 'Basic Conversations',
         author: 'Jane Smith',
-        createdBy: 'Marie Claire',
+        createdBy: 'Marie Rodriguez',
         createdDate: '2024-01-16',
         likesCount: 15,
         commentsCount: 5,
@@ -47,13 +47,13 @@ const Feed = () => {
       {
         id: 3,
         originalText: 'Hello, how are you?',
-        translatedText: 'Hallo, wie geht es dir?',
+        translatedText: 'Hola, ¿qué tal?',
         sourceLanguage: 'English',
-        targetLanguage: 'German',
+        targetLanguage: 'Spanish',
         context: 'Chapter 1, Page 1',
         bookTitle: 'Basic Conversations',
         author: 'Jane Smith',
-        createdBy: 'Hans Mueller',
+        createdBy: 'Carlos Lopez',
         createdDate: '2024-01-17',
         likesCount: 10,
         commentsCount: 2,
@@ -77,13 +77,13 @@ const Feed = () => {
       {
         id: 5,
         originalText: 'The weather is beautiful today.',
-        translatedText: 'Il tempo è bellissimo oggi.',
+        translatedText: 'El tiempo está precioso hoy.',
         sourceLanguage: 'English',
-        targetLanguage: 'Italian',
+        targetLanguage: 'Spanish',
         context: 'Chapter 2, Page 5',
         bookTitle: 'Weather Expressions',
         author: 'Mike Johnson',
-        createdBy: 'Giuseppe Rossi',
+        createdBy: 'Ana Martinez',
         createdDate: '2024-01-18',
         likesCount: 6,
         commentsCount: 0,
@@ -103,6 +103,21 @@ const Feed = () => {
         likesCount: 14,
         commentsCount: 4,
         tags: ['hobbies', 'reading']
+      },
+      {
+        id: 7,
+        originalText: 'I love reading books.',
+        translatedText: 'Adoro leer libros.',
+        sourceLanguage: 'English',
+        targetLanguage: 'Spanish',
+        context: 'Chapter 3, Page 12',
+        bookTitle: 'Hobbies and Interests',
+        author: 'Emily Davis',
+        createdBy: 'Sofia Hernandez',
+        createdDate: '2024-01-19',
+        likesCount: 9,
+        commentsCount: 2,
+        tags: ['hobbies', 'reading']
       }
     ]);
   }, []);
@@ -113,9 +128,9 @@ const Feed = () => {
     translation.bookTitle.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Group translations by book title and original text
+  // Group translations by book title, original text, and target language
   const groupedTranslations = filteredTranslations.reduce((groups, translation) => {
-    const key = `${translation.bookTitle}|||${translation.originalText}`;
+    const key = `${translation.bookTitle}|||${translation.originalText}|||${translation.targetLanguage}`;
     if (!groups[key]) {
       groups[key] = [];
     }
@@ -225,7 +240,7 @@ const Feed = () => {
                     </p>
                     {isGrouped && (
                       <p className="text-xs text-blue-600 mt-1">
-                        Multiple translations available for comparison
+                        Multiple {firstTranslation.targetLanguage} translations for comparison
                       </p>
                     )}
                   </div>
@@ -244,9 +259,8 @@ const Feed = () => {
               <CardContent className="space-y-4">
                 {/* Original Text */}
                 <div className="p-4 bg-slate-50 rounded-lg">
-                  <h4 className="font-medium text-slate-700 mb-2">Original Text</h4>
+                  <h4 className="font-medium text-slate-700 mb-2">Original Text ({firstTranslation.sourceLanguage})</h4>
                   <p className="text-slate-900">{firstTranslation.originalText}</p>
-                  <p className="text-xs text-slate-500 mt-1">{firstTranslation.sourceLanguage}</p>
                 </div>
 
                 {/* Translations Grid */}
@@ -262,7 +276,7 @@ const Feed = () => {
                       <div className="p-4 bg-teal-50 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-medium text-teal-700">
-                            {translation.targetLanguage}
+                            {isGrouped ? `Translation ${translationGroup.indexOf(translation) + 1}` : translation.targetLanguage}
                           </h4>
                           {isGrouped && (
                             <div className="flex items-center space-x-2 text-xs text-slate-500">
