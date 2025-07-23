@@ -12,46 +12,10 @@ const BookDetail = () => {
   const [translations, setTranslations] = useState([]);
 
   useEffect(() => {
-    // Mock data based on book ID
-    const mockBook = {
-      id: parseInt(id),
-      title: 'Basic Spanish Conversations',
-      author: 'Jane Smith',
-      description: 'Essential phrases and conversations for Spanish learners',
-      sourceLanguage: 'English',
-      targetLanguage: 'Spanish',
-      coverImageUrl: null,
-      translationsCount: 25,
-      contributorsCount: 3,
-      isPublic: true,
-      tags: ['beginner', 'conversation', 'spanish'],
-      createdBy: 'Jane Smith',
-      createdDate: '2024-01-01'
-    };
-
-    const mockTranslations = [
-      {
-        id: 1,
-        originalText: 'Hello, how are you?',
-        translatedText: 'Hola, ¿cómo estás?',
-        context: 'Chapter 1 - Greetings',
-        orderIndex: 1,
-        createdBy: 'Jane Smith',
-        createdDate: '2024-01-01'
-      },
-      {
-        id: 2,
-        originalText: 'Nice to meet you.',
-        translatedText: 'Mucho gusto.',
-        context: 'Chapter 1 - Greetings',
-        orderIndex: 2,
-        createdBy: 'John Doe',
-        createdDate: '2024-01-02'
-      }
-    ];
-
-    setBook(mockBook);
-    setTranslations(mockTranslations);
+    // TODO: Fetch book and translations from database based on ID
+    // For now, setting null until database integration is complete
+    setBook(null);
+    setTranslations([]);
   }, [id]);
 
   if (!book) {
