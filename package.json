@@ -19,9 +19,9 @@
     "build:all": "turbo build",
     "frontend:dev": "turbo dev --filter=frontend",
     "frontend:build": "turbo build --filter=frontend",
-    "db:push": "prisma db push",
-    "db:seed": "node prisma/seed.js",
-    "db:studio": "prisma studio"
+    "db:push": "cd api && npx prisma db push",
+    "db:seed": "cd api && node prisma/seed.js",
+    "db:studio": "cd api && npx prisma studio"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
