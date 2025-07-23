@@ -33,43 +33,53 @@ export const getGoogleAuthUrl = async () => {
 };
 
 // Handle Google OAuth callback
-export const handleGoogleCallback = async (code) => {
+export const handleGoogleCallback = async (codeOrToken) => {
   try {
-    if (!code) {
-      throw new Error('Authorization code not received');
-    }
+    // Try backend first if we have an authorization code
+    if (codeOrToken && !codeOrToken.includes('.')) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/google/callback`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            code: codeOrToken,
+            redirectUri: REDIRECT_URI
+          })
+        });
 
-    // Try backend first if available
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/google/callback`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code,
-          redirectUri: REDIRECT_URI
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data;
+        if (response.ok) {
+          const data = await response.json();
+          return data;
+        }
+      } catch (backendError) {
+        console.log('Backend not available, trying frontend-only auth');
       }
-    } catch (backendError) {
-      console.log('Backend not available, handling auth on frontend');
     }
 
-    // Fallback: Create a mock user for frontend-only mode
-    // In production, you would need the backend for security
-    console.warn('⚠�� Frontend-only auth - for development only!');
+    // Frontend-only: Handle ID token from URL fragment
+    const urlParams = new URLSearchParams(window.location.hash.substring(1));
+    const idToken = urlParams.get('id_token');
 
-    // Create a simple user object without actual Google token exchange
+    if (!idToken) {
+      throw new Error('No ID token received from Google');
+    }
+
+    // Decode the JWT ID token (basic decoding, not verification)
+    const tokenParts = idToken.split('.');
+    if (tokenParts.length !== 3) {
+      throw new Error('Invalid ID token format');
+    }
+
+    const payload = JSON.parse(atob(tokenParts[1]));
+
+    // Create user object from ID token
     const user = {
-      id: `temp_${Date.now()}`,
-      email: 'demo@example.com',
-      name: 'Demo User',
-      avatar: 'https://via.placeholder.com/150',
+      id: `google_${payload.sub}`,
+      email: payload.email,
+      name: payload.name,
+      avatar: payload.picture,
       createdAt: new Date().toISOString()
     };
 
