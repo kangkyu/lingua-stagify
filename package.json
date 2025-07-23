@@ -9,19 +9,19 @@
     "api"
   ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
+    "dev": "turbo dev --filter=frontend",
+    "build": "turbo build --filter=frontend",
+    "lint": "turbo lint",
+    "preview": "turbo preview --filter=frontend",
     "dev:all": "turbo dev",
     "build:all": "turbo build",
-    "frontend:dev": "vite",
-    "frontend:build": "vite build",
+    "frontend:dev": "turbo dev --filter=frontend",
+    "frontend:build": "turbo build --filter=frontend",
+    "api:dev": "turbo dev --filter=api",
+    "api:start": "turbo start --filter=api",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
-    "db:studio": "prisma studio",
-    "api:dev": "turbo dev --filter=api",
-    "api:start": "turbo start --filter=api"
+    "db:studio": "prisma studio"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
