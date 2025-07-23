@@ -5,16 +5,31 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Plus, BookOpen, Users } from 'lucide-react';
+import { bookService } from '@/lib/database';
 
 const Books = () => {
   const { user } = useAuth();
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // TODO: Fetch books from database
-    // For now, starting with empty array until database integration is complete
-    setBooks([]);
+    const fetchBooks = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await bookService.getAllBooks();
+        setBooks(data);
+      } catch (err) {
+        console.error('Failed to fetch books:', err);
+        setError('Failed to load books. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
   }, []);
 
   const filteredBooks = books.filter(book =>
