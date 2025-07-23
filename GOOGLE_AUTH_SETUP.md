@@ -46,16 +46,31 @@ PORT=3001
 
 ⚠️ **Important**: Never commit your actual Google credentials to version control.
 
-## Step 3: Test the Authentication
+## Step 3: Deploy and Test
 
-1. Start the development server:
+### Option 1: Development (Both Apps Locally)
+1. **Start Backend API:**
+   ```bash
+   cd api
+   npm install
+   npm run dev
+   ```
+
+2. **Start Frontend (in another terminal):**
    ```bash
    npm run dev
    ```
 
-2. Open your browser to `http://localhost:5173`
+3. Open your browser to `http://localhost:5173`
 
-3. Click "Sign In with Google" to test the authentication flow
+### Option 2: Production (Separate Deployments)
+1. **Deploy Backend** to your server platform (Railway, Heroku, etc.)
+2. **Deploy Frontend** to Builder.io with `VITE_API_URL` pointing to your backend
+3. **Set up redirect URIs** in Google Console for both environments
+
+### Testing Authentication
+- Click "Sign In with Google"
+- Should redirect to Google, then back to your app with user logged in
 
 ## How It Works
 
