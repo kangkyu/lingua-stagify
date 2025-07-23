@@ -27,21 +27,14 @@ This guide will help you set up Google OAuth authentication for the Lingua Stagi
 
 ## Step 2: Configure Environment Variables in Builder.io
 
-Set these environment variables in your Builder.io project settings:
+Set this environment variable in your Builder.io project settings:
 
-### Backend Environment Variables:
+### Frontend Environment Variables:
 ```env
-GOOGLE_CLIENT_ID="your_actual_google_client_id_here"
-GOOGLE_CLIENT_SECRET="your_actual_google_client_secret_here"
-DATABASE_URL="your_postgresql_connection_string"
-PORT=3001
-CLIENT_URL="http://localhost:5173"
+VITE_GOOGLE_CLIENT_ID="your_actual_google_client_id_here"
 ```
 
-### Frontend Environment Variables (with VITE_ prefix):
-```env
-VITE_API_URL="http://localhost:3001"
-```
+⚠️ **Note**: Only the Client ID is needed for frontend-only OAuth. The Client Secret is not used or needed.
 
 ⚠️ **Important**: Never commit your actual Google credentials to version control.
 
