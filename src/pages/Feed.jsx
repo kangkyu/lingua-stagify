@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Heart, MessageCircle, Bookmark, Search } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark, Search, Users } from 'lucide-react';
 
 const Feed = () => {
   const { user } = useAuth();
@@ -31,6 +31,36 @@ const Feed = () => {
       },
       {
         id: 2,
+        originalText: 'Hello, how are you?',
+        translatedText: 'Salut, comment allez-vous?',
+        sourceLanguage: 'English',
+        targetLanguage: 'French',
+        context: 'Chapter 1, Page 1',
+        bookTitle: 'Basic Conversations',
+        author: 'Jane Smith',
+        createdBy: 'Marie Claire',
+        createdDate: '2024-01-16',
+        likesCount: 15,
+        commentsCount: 5,
+        tags: ['greetings', 'conversation']
+      },
+      {
+        id: 3,
+        originalText: 'Hello, how are you?',
+        translatedText: 'Hallo, wie geht es dir?',
+        sourceLanguage: 'English',
+        targetLanguage: 'German',
+        context: 'Chapter 1, Page 1',
+        bookTitle: 'Basic Conversations',
+        author: 'Jane Smith',
+        createdBy: 'Hans Mueller',
+        createdDate: '2024-01-17',
+        likesCount: 10,
+        commentsCount: 2,
+        tags: ['greetings', 'conversation']
+      },
+      {
+        id: 4,
         originalText: 'The weather is beautiful today.',
         translatedText: 'El clima está hermoso hoy.',
         sourceLanguage: 'English',
@@ -43,6 +73,36 @@ const Feed = () => {
         likesCount: 8,
         commentsCount: 1,
         tags: ['weather', 'adjectives']
+      },
+      {
+        id: 5,
+        originalText: 'The weather is beautiful today.',
+        translatedText: 'Il tempo è bellissimo oggi.',
+        sourceLanguage: 'English',
+        targetLanguage: 'Italian',
+        context: 'Chapter 2, Page 5',
+        bookTitle: 'Weather Expressions',
+        author: 'Mike Johnson',
+        createdBy: 'Giuseppe Rossi',
+        createdDate: '2024-01-18',
+        likesCount: 6,
+        commentsCount: 0,
+        tags: ['weather', 'adjectives']
+      },
+      {
+        id: 6,
+        originalText: 'I love reading books.',
+        translatedText: 'Me encanta leer libros.',
+        sourceLanguage: 'English',
+        targetLanguage: 'Spanish',
+        context: 'Chapter 3, Page 12',
+        bookTitle: 'Hobbies and Interests',
+        author: 'Emily Davis',
+        createdBy: 'Carlos Lopez',
+        createdDate: '2024-01-13',
+        likesCount: 14,
+        commentsCount: 4,
+        tags: ['hobbies', 'reading']
       }
     ]);
   }, []);
@@ -53,16 +113,45 @@ const Feed = () => {
     translation.bookTitle.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const sortedTranslations = [...filteredTranslations].sort((a, b) => {
-    switch (sortBy) {
-      case 'popular':
-        return b.likesCount - a.likesCount;
-      case 'discussed':
-        return b.commentsCount - a.commentsCount;
-      default: // recent
-        return new Date(b.createdDate) - new Date(a.createdDate);
+  // Group translations by book title and original text
+  const groupedTranslations = filteredTranslations.reduce((groups, translation) => {
+    const key = `${translation.bookTitle}|||${translation.originalText}`;
+    if (!groups[key]) {
+      groups[key] = [];
     }
-  });
+    groups[key].push(translation);
+    return groups;
+  }, {});
+
+  // Convert grouped translations to sorted array
+  const sortedTranslationGroups = Object.values(groupedTranslations)
+    .map(group => {
+      // Sort translations within each group
+      const sortedGroup = [...group].sort((a, b) => {
+        switch (sortBy) {
+          case 'popular':
+            return b.likesCount - a.likesCount;
+          case 'discussed':
+            return b.commentsCount - a.commentsCount;
+          default: // recent
+            return new Date(b.createdDate) - new Date(a.createdDate);
+        }
+      });
+      return sortedGroup;
+    })
+    .sort((a, b) => {
+      // Sort groups by the best translation in each group
+      const bestA = a[0];
+      const bestB = b[0];
+      switch (sortBy) {
+        case 'popular':
+          return bestB.likesCount - bestA.likesCount;
+        case 'discussed':
+          return bestB.commentsCount - bestA.commentsCount;
+        default: // recent
+          return new Date(bestB.createdDate) - new Date(bestA.createdDate);
+      }
+    });
 
   return (
     <div className="space-y-6">
@@ -112,85 +201,123 @@ const Feed = () => {
       </div>
 
       {/* Translations List */}
-      <div className="space-y-4">
-        {sortedTranslations.map((translation) => (
-          <Card key={translation.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-lg text-slate-800">
-                    {translation.bookTitle}
-                  </CardTitle>
-                  <p className="text-sm text-slate-600">
-                    by {translation.author} • {translation.context}
-                  </p>
-                  <p className="text-xs text-slate-500 mt-1">
-                    {translation.sourceLanguage} → {translation.targetLanguage}
-                  </p>
+      <div className="space-y-6">
+        {sortedTranslationGroups.map((translationGroup, groupIndex) => {
+          const firstTranslation = translationGroup[0];
+          const isGrouped = translationGroup.length > 1;
+
+          return (
+            <Card key={`group-${groupIndex}`} className="hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-lg text-slate-800 flex items-center gap-2">
+                      {firstTranslation.bookTitle}
+                      {isGrouped && (
+                        <span className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs font-medium">
+                          <Users className="w-3 h-3" />
+                          {translationGroup.length} translations
+                        </span>
+                      )}
+                    </CardTitle>
+                    <p className="text-sm text-slate-600">
+                      by {firstTranslation.author} • {firstTranslation.context}
+                    </p>
+                    {isGrouped && (
+                      <p className="text-xs text-blue-600 mt-1">
+                        Multiple translations available for comparison
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-1">
+                    {firstTranslation.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-xs"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex gap-1">
-                  {translation.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-xs"
-                    >
-                      {tag}
-                    </span>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Original Text */}
+                <div className="p-4 bg-slate-50 rounded-lg">
+                  <h4 className="font-medium text-slate-700 mb-2">Original Text</h4>
+                  <p className="text-slate-900">{firstTranslation.originalText}</p>
+                  <p className="text-xs text-slate-500 mt-1">{firstTranslation.sourceLanguage}</p>
+                </div>
+
+                {/* Translations Grid */}
+                <div className={`grid gap-4 ${
+                  isGrouped
+                    ? translationGroup.length === 2
+                      ? 'md:grid-cols-2'
+                      : 'md:grid-cols-2 lg:grid-cols-3'
+                    : 'md:grid-cols-1'
+                }`}>
+                  {translationGroup.map((translation) => (
+                    <div key={translation.id} className="space-y-3">
+                      <div className="p-4 bg-teal-50 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-medium text-teal-700">
+                            {translation.targetLanguage}
+                          </h4>
+                          {isGrouped && (
+                            <div className="flex items-center space-x-2 text-xs text-slate-500">
+                              <Heart className="w-3 h-3" />
+                              <span>{translation.likesCount}</span>
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-teal-900 mb-3">{translation.translatedText}</p>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-teal-200">
+                          <div className="flex items-center space-x-3">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-slate-600 hover:text-red-600 h-6 px-2"
+                              disabled={!user}
+                            >
+                              <Heart className="w-3 h-3 mr-1" />
+                              {translation.likesCount}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-slate-600 hover:text-blue-600 h-6 px-2"
+                              disabled={!user}
+                            >
+                              <MessageCircle className="w-3 h-3 mr-1" />
+                              {translation.commentsCount}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-slate-600 hover:text-yellow-600 h-6 px-1"
+                              disabled={!user}
+                            >
+                              <Bookmark className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-xs text-slate-500 px-1">
+                        by {translation.createdBy} • {translation.createdDate}
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50 rounded-lg">
-                  <h4 className="font-medium text-slate-700 mb-2">Original</h4>
-                  <p className="text-slate-900">{translation.originalText}</p>
-                </div>
-                <div className="p-4 bg-teal-50 rounded-lg">
-                  <h4 className="font-medium text-teal-700 mb-2">Translation</h4>
-                  <p className="text-teal-900">{translation.translatedText}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t">
-                <div className="flex items-center space-x-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-slate-600 hover:text-red-600"
-                    disabled={!user}
-                  >
-                    <Heart className="w-4 h-4 mr-1" />
-                    {translation.likesCount}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-slate-600 hover:text-blue-600"
-                    disabled={!user}
-                  >
-                    <MessageCircle className="w-4 h-4 mr-1" />
-                    {translation.commentsCount}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-slate-600 hover:text-yellow-600"
-                    disabled={!user}
-                  >
-                    <Bookmark className="w-4 h-4" />
-                  </Button>
-                </div>
-                <div className="text-sm text-slate-500">
-                  by {translation.createdBy} • {translation.createdDate}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      {sortedTranslations.length === 0 && (
+      {sortedTranslationGroups.length === 0 && (
         <div className="text-center py-12">
           <p className="text-slate-500">No translations found matching your search.</p>
         </div>
