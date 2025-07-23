@@ -17,19 +17,19 @@
 ## Architecture
 
 ### Frontend (React + Vite)
-- Built with `turbo build` command
+- Built with `npm run build` (which runs `vite build`)
 - Outputs to `dist/` directory
 - Served as static files with SPA routing
 
 ### Backend (Serverless Functions)
-- API functions in `api/` directory
+- API functions in `api/` directory (pre-created)
 - Automatically deployed as Vercel serverless functions
 - No Express server needed on Vercel
 
 ### Monorepo Benefits
 - Single deployment for frontend + backend
-- Shared dependencies via Turbo
-- Optimized build caching
+- Shared dependencies via npm workspaces
+- Turbo available for local development
 - Environment variable sharing
 
 ## Local Development
