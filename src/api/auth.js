@@ -1,12 +1,12 @@
-// Frontend-only Google OAuth implementation
+// Frontend OAuth implementation with secure backend
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = import.meta.env.VITE_GOOGLE_CLIENT_SECRET;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 const REDIRECT_URI = `${window.location.origin}/auth/callback`;
 
 // Generate Google OAuth URL
 export const getGoogleAuthUrl = async () => {
-  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-    throw new Error('Google OAuth not configured. Please set VITE_GOOGLE_CLIENT_ID and VITE_GOOGLE_CLIENT_SECRET environment variables.');
+  if (!GOOGLE_CLIENT_ID) {
+    throw new Error('Google Client ID not configured. Please set VITE_GOOGLE_CLIENT_ID environment variable.');
   }
 
   const params = new URLSearchParams({
@@ -21,61 +21,34 @@ export const getGoogleAuthUrl = async () => {
   return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 };
 
-// Handle Google OAuth callback
+// Handle Google OAuth callback by sending code to backend
 export const handleGoogleCallback = async (code) => {
   try {
-    if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      throw new Error('Google OAuth not configured');
+    if (!code) {
+      throw new Error('Authorization code not received');
     }
 
-    // Exchange authorization code for access token
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    // Send authorization code to backend for secure token exchange
+    const response = await fetch(`${API_BASE_URL}/api/auth/google/callback`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: new URLSearchParams({
-        client_id: GOOGLE_CLIENT_ID,
-        client_secret: GOOGLE_CLIENT_SECRET,
-        code: code,
-        grant_type: 'authorization_code',
-        redirect_uri: REDIRECT_URI
+      body: JSON.stringify({
+        code,
+        redirectUri: REDIRECT_URI
       })
     });
 
-    if (!tokenResponse.ok) {
-      const errorData = await tokenResponse.json().catch(() => ({}));
-      throw new Error(errorData.error_description || 'Failed to exchange authorization code for tokens');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Authentication failed');
     }
 
-    const tokens = await tokenResponse.json();
-
-    // Get user info from Google
-    const userInfoResponse = await fetch(
-      `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${tokens.access_token}`
-    );
-
-    if (!userInfoResponse.ok) {
-      throw new Error('Failed to fetch user info from Google');
-    }
-
-    const googleUser = await userInfoResponse.json();
-
-    // Create user object (frontend-only, no database)
-    const user = {
-      id: `google_${googleUser.id}`,
-      email: googleUser.email,
-      name: googleUser.name,
-      avatar: googleUser.picture,
-      createdAt: new Date().toISOString()
-    };
-
-    return {
-      success: true,
-      user
-    };
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error('Google OAuth error:', error);
+    console.error('OAuth callback error:', error);
     return {
       success: false,
       error: error.message
