@@ -8,15 +8,15 @@
     "api"
   ],
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
     "preview": "vite preview",
-    "db:push": "turbo run db:push",
-    "db:seed": "turbo run db:seed",
-    "db:studio": "turbo run db:studio",
-    "frontend:dev": "vite",
-    "frontend:build": "vite build",
+    "dev:all": "turbo run dev",
+    "build:all": "turbo run build",
+    "db:push": "prisma db push",
+    "db:seed": "node prisma/seed.js",
+    "db:studio": "prisma studio",
     "api:dev": "turbo run dev --filter=api",
     "api:start": "turbo run start --filter=api"
   },
