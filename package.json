@@ -12,13 +12,13 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "dev:all": "turbo run dev",
-    "build:all": "turbo run build",
+    "dev:all": "turbo dev",
+    "build:all": "turbo build",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
     "db:studio": "prisma studio",
-    "api:dev": "turbo run dev --filter=api",
-    "api:start": "turbo run start --filter=api"
+    "api:dev": "turbo dev --filter=api",
+    "api:start": "turbo start --filter=api"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
