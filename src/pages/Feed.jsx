@@ -16,6 +16,51 @@ const Feed = () => {
     setTranslations([
       {
         id: 1,
+        originalText: 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
+        translatedText: 'Es una verdad universalmente reconocida que todo hombre soltero en posesión de una gran fortuna necesita una esposa.',
+        sourceLanguage: 'English',
+        targetLanguage: 'Spanish',
+        context: 'Chapter 1, Opening line',
+        bookTitle: 'Pride and Prejudice',
+        author: 'Jane Austen',
+        createdBy: 'María González',
+        createdDate: '2024-01-15',
+        likesCount: 28,
+        commentsCount: 12,
+        tags: ['classic', 'literature', 'opening']
+      },
+      {
+        id: 2,
+        originalText: 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
+        translatedText: 'Es una verdad reconocida universalmente que un hombre soltero y con fortuna debe estar necesitado de esposa.',
+        sourceLanguage: 'English',
+        targetLanguage: 'Spanish',
+        context: 'Chapter 1, Opening line',
+        bookTitle: 'Pride and Prejudice',
+        author: 'Jane Austen',
+        createdBy: 'Carlos Ruiz',
+        createdDate: '2024-01-16',
+        likesCount: 32,
+        commentsCount: 8,
+        tags: ['classic', 'literature', 'opening']
+      },
+      {
+        id: 3,
+        originalText: 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.',
+        translatedText: 'Es verdad universalmente admitida que un hombre soltero, dueño de una gran fortuna, ha de estar necesitado de esposa.',
+        sourceLanguage: 'English',
+        targetLanguage: 'Spanish',
+        context: 'Chapter 1, Opening line',
+        bookTitle: 'Pride and Prejudice',
+        author: 'Jane Austen',
+        createdBy: 'Ana Martínez',
+        createdDate: '2024-01-17',
+        likesCount: 24,
+        commentsCount: 15,
+        tags: ['classic', 'literature', 'opening']
+      },
+      {
+        id: 4,
         originalText: 'Hello, how are you?',
         translatedText: 'Hola, ¿cómo estás?',
         sourceLanguage: 'English',
@@ -30,37 +75,7 @@ const Feed = () => {
         tags: ['greetings', 'conversation']
       },
       {
-        id: 2,
-        originalText: 'Hello, how are you?',
-        translatedText: '¡Hola! ¿Cómo te va?',
-        sourceLanguage: 'English',
-        targetLanguage: 'Spanish',
-        context: 'Chapter 1, Page 1',
-        bookTitle: 'Basic Conversations',
-        author: 'Jane Smith',
-        createdBy: 'Marie Rodriguez',
-        createdDate: '2024-01-16',
-        likesCount: 15,
-        commentsCount: 5,
-        tags: ['greetings', 'conversation']
-      },
-      {
-        id: 3,
-        originalText: 'Hello, how are you?',
-        translatedText: 'Hola, ¿qué tal?',
-        sourceLanguage: 'English',
-        targetLanguage: 'Spanish',
-        context: 'Chapter 1, Page 1',
-        bookTitle: 'Basic Conversations',
-        author: 'Jane Smith',
-        createdBy: 'Carlos Lopez',
-        createdDate: '2024-01-17',
-        likesCount: 10,
-        commentsCount: 2,
-        tags: ['greetings', 'conversation']
-      },
-      {
-        id: 4,
+        id: 5,
         originalText: 'The weather is beautiful today.',
         translatedText: 'El clima está hermoso hoy.',
         sourceLanguage: 'English',
@@ -75,7 +90,7 @@ const Feed = () => {
         tags: ['weather', 'adjectives']
       },
       {
-        id: 5,
+        id: 6,
         originalText: 'The weather is beautiful today.',
         translatedText: 'El tiempo está precioso hoy.',
         sourceLanguage: 'English',
@@ -90,7 +105,7 @@ const Feed = () => {
         tags: ['weather', 'adjectives']
       },
       {
-        id: 6,
+        id: 7,
         originalText: 'I love reading books.',
         translatedText: 'Me encanta leer libros.',
         sourceLanguage: 'English',
@@ -105,7 +120,7 @@ const Feed = () => {
         tags: ['hobbies', 'reading']
       },
       {
-        id: 7,
+        id: 8,
         originalText: 'I love reading books.',
         translatedText: 'Adoro leer libros.',
         sourceLanguage: 'English',
@@ -260,7 +275,7 @@ const Feed = () => {
                 {/* Original Text */}
                 <div className="p-4 bg-slate-50 rounded-lg">
                   <h4 className="font-medium text-slate-700 mb-2">Original Text ({firstTranslation.sourceLanguage})</h4>
-                  <p className="text-slate-900">{firstTranslation.originalText}</p>
+                  <p className="text-slate-900 leading-relaxed">{firstTranslation.originalText}</p>
                 </div>
 
                 {/* Translations Grid */}
