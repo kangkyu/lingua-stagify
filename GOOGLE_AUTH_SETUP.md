@@ -33,7 +33,6 @@ Set these environment variables in your Builder.io project settings:
 ```env
 GOOGLE_CLIENT_ID="your_actual_google_client_id_here"
 GOOGLE_CLIENT_SECRET="your_actual_google_client_secret_here"
-GOOGLE_REDIRECT_URI="http://localhost:5173/auth/callback"
 DATABASE_URL="your_postgresql_connection_string"
 PORT=3001
 CLIENT_URL="http://localhost:5173"
@@ -113,7 +112,7 @@ The authentication flow:
 
 ### Redirect URI mismatch
 - Ensure the redirect URI in your Google Console matches exactly: `http://localhost:5173/auth/callback`
-- Check that your `GOOGLE_REDIRECT_URI` environment variable is correct
+- The redirect URI is automatically constructed as `CLIENT_URL + /auth/callback`
 
 ### API connection errors
 - Make sure the API server is running on port 3001

@@ -4,17 +4,20 @@ import prisma from '../../lib/prisma.js';
 // Environment variables (set in Builder.io)
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:5173/auth/callback';
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
-const oauth2Client = new GoogleAuth().OAuth2(
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  GOOGLE_REDIRECT_URI
-);
+// Construct redirect URI dynamically
+const getRedirectUri = () => `${CLIENT_URL}/auth/callback`;
 
 // Generate Google OAuth URL
 export const generateAuthUrl = (req, res) => {
   try {
+    const oauth2Client = new GoogleAuth().OAuth2(
+      GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET,
+      getRedirectUri()
+    );
+
     const scopes = [
       'https://www.googleapis.com/auth/userinfo.email',
       'https://www.googleapis.com/auth/userinfo.profile'
@@ -41,6 +44,12 @@ export const handleCallback = async (req, res) => {
     if (!code) {
       return res.status(400).json({ error: 'Authorization code is required' });
     }
+
+    const oauth2Client = new GoogleAuth().OAuth2(
+      GOOGLE_CLIENT_ID,
+      GOOGLE_CLIENT_SECRET,
+      getRedirectUri()
+    );
 
     // Exchange code for tokens
     const { tokens } = await oauth2Client.getToken(code);
