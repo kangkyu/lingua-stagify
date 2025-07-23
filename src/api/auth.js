@@ -1,74 +1,42 @@
-import { userService } from '@/lib/database.js';
-
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI || 'http://localhost:5173/auth/callback';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 // Generate Google OAuth URL
-export const getGoogleAuthUrl = () => {
-  const params = new URLSearchParams({
-    client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: GOOGLE_REDIRECT_URI,
-    response_type: 'code',
-    scope: 'openid email profile',
-    access_type: 'offline',
-    include_granted_scopes: 'true'
-  });
+export const getGoogleAuthUrl = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/google`);
+    const data = await response.json();
 
-  return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to get auth URL');
+    }
+
+    return data.authUrl;
+  } catch (error) {
+    console.error('Error getting auth URL:', error);
+    throw error;
+  }
 };
 
 // Handle Google OAuth callback
 export const handleGoogleCallback = async (code) => {
   try {
-    // Exchange authorization code for access token
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/callback`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
-      body: new URLSearchParams({
-        client_id: GOOGLE_CLIENT_ID,
-        code: code,
-        grant_type: 'authorization_code',
-        redirect_uri: GOOGLE_REDIRECT_URI
-      })
+      body: JSON.stringify({ code })
     });
 
-    if (!tokenResponse.ok) {
-      throw new Error('Failed to exchange authorization code for tokens');
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Authentication failed');
     }
 
-    const tokens = await tokenResponse.json();
-
-    // Get user info from Google
-    const userInfoResponse = await fetch(
-      `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${tokens.access_token}`
-    );
-
-    if (!userInfoResponse.ok) {
-      throw new Error('Failed to fetch user info from Google');
-    }
-
-    const googleUser = await userInfoResponse.json();
-
-    // Create or update user in database
-    const user = await userService.createOrUpdateUser({
-      email: googleUser.email,
-      name: googleUser.name,
-      avatar: googleUser.picture
-    });
-
-    return {
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        avatar: user.avatar
-      }
-    };
+    return data;
   } catch (error) {
-    console.error('Google OAuth error:', error);
+    console.error('OAuth callback error:', error);
     return {
       success: false,
       error: error.message
@@ -79,21 +47,14 @@ export const handleGoogleCallback = async (code) => {
 // Verify user session (for protected routes)
 export const verifyUserSession = async (userId) => {
   try {
-    const user = await userService.getUserById(userId);
+    const response = await fetch(`${API_BASE_URL}/api/auth/verify/${userId}`);
+    const data = await response.json();
 
-    if (!user) {
-      return { success: false, error: 'User not found' };
+    if (!response.ok) {
+      throw new Error(data.error || 'Session verification failed');
     }
 
-    return {
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        avatar: user.avatar
-      }
-    };
+    return data;
   } catch (error) {
     console.error('Session verification error:', error);
     return {
