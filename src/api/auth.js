@@ -1,5 +1,5 @@
 import { GoogleAuth } from 'google-auth-library';
-import { prisma } from '@/lib/prisma.js';
+import prisma from '@/lib/prisma.js';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = import.meta.env.VITE_GOOGLE_CLIENT_SECRET;
