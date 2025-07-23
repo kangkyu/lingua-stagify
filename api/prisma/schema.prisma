@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  books       Book[]
+  translations Translation[]
+  bookmarks   Bookmark[]
+
+  @@map("users")
+}
+
+model Book {
+  id          String   @id @default(cuid())
+  title       String
+  author      String
+  coverImage  String?
+  description String?
+  language    String   @default("en")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  authorId     String
+  authorUser   User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  translations Translation[]
+  bookmarks    Bookmark[]
+
+  @@map("books")
+}
+
+model Translation {
+  id           String   @id @default(cuid())
+  originalText String
+  translatedText String
+  sourceLanguage String @default("en")
+  targetLanguage String
+  context      String?
+  chapter      String?
+  pageNumber   Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  bookId       String
+  book         Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  translatorId String
+  translator   User      @relation(fields: [translatorId], references: [id], onDelete: Cascade)
+  bookmarks    Bookmark[]
+
+  @@map("translations")
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  translationId String?
+  translation   Translation? @relation(fields: [translationId], references: [id], onDelete: Cascade)
+  bookId        String?
+  book          Book?        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, translationId])
+  @@unique([userId, bookId])
+  @@map("bookmarks")
+}
