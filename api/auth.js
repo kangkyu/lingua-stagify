@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { GoogleAuth } from 'google-auth-library';
+import { OAuth2Client } from 'google-auth-library';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
@@ -51,7 +51,7 @@ app.post('/api/auth/validate-token', async (req, res) => {
     console.log('- Client ID for verification:', GOOGLE_CLIENT_ID);
 
     // Verify ID token with Google
-    const oauth2Client = new GoogleAuth().OAuth2(GOOGLE_CLIENT_ID);
+    const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID);
     const ticket = await oauth2Client.verifyIdToken({
       idToken: idToken,
       audience: GOOGLE_CLIENT_ID
@@ -110,10 +110,9 @@ app.get('/api/auth/google/url', (req, res) => {
     const params = new URLSearchParams({
       client_id: GOOGLE_CLIENT_ID,
       redirect_uri: redirectUri,
-      response_type: 'code',
+      response_type: 'id_token token',
       scope: 'openid email profile',
-      access_type: 'offline',
-      include_granted_scopes: 'true'
+      nonce: Date.now().toString()
     });
 
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
