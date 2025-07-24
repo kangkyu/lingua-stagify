@@ -91,12 +91,12 @@ DATABASE_URL=your_postgresql_connection_string
 
 4. **Start development servers**:
 ```bash
-# Frontend + API
-npm run dev:all
+# Frontend only (recommended for local development)
+npm run dev
 
-# Or separately:
-npm run dev:frontend  # http://localhost:5173
-npm run dev:api       # http://localhost:3001
+# Or run both separately in different terminals:
+npm run dev:frontend  # http://localhost:5173 (Terminal 1)
+npm run dev:api       # http://localhost:3001 (Terminal 2)
 ```
 
 ### Development Commands
