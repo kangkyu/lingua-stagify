@@ -1,8 +1,5 @@
 // Frontend OAuth implementation with Vercel serverless functions
-import { API_ROOT_URL } from './config.js';
-
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-const REDIRECT_URI = `${window.location.origin}/auth/callback`;
+import { API_ROOT_URL, GOOGLE_CLIENT_ID, REDIRECT_URI } from './config.js';
 
 // Generate Google OAuth URL for ID token flow
 export const getGoogleAuthUrl = async () => {
