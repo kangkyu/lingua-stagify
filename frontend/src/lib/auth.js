@@ -33,7 +33,7 @@ export const handleGoogleCallback = async () => {
     }
 
     // Validate ID token with backend
-    const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
+    const response = await fetch(`${API_ROOT_URL}/api/auth/validate-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
