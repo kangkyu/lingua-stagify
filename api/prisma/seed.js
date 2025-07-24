@@ -58,11 +58,8 @@ async function main() {
 
   // Create books with different authors
   const books = await Promise.all([
-    prisma.book.upsert({
-      where: { id: 'pride-and-prejudice' },
-      update: {},
-      create: {
-        id: 'pride-and-prejudice',
+    prisma.book.create({
+      data: {
         title: 'Pride and Prejudice',
         author: 'Jane Austen',
         authorId: janeAusten.id,
@@ -71,11 +68,8 @@ async function main() {
         language: 'en'
       },
     }),
-    prisma.book.upsert({
-      where: { id: 'don-quixote' },
-      update: {},
-      create: {
-        id: 'don-quixote',
+    prisma.book.create({
+      data: {
         title: 'Don Quixote',
         author: 'Miguel de Cervantes',
         authorId: cervantes.id,
@@ -84,11 +78,8 @@ async function main() {
         language: 'es'
       },
     }),
-    prisma.book.upsert({
-      where: { id: 'les-miserables' },
-      update: {},
-      create: {
-        id: 'les-miserables',
+    prisma.book.create({
+      data: {
         title: 'Les Misérables',
         author: 'Victor Hugo',
         authorId: victorHugo.id,
@@ -97,11 +88,8 @@ async function main() {
         language: 'fr'
       },
     }),
-    prisma.book.upsert({
-      where: { id: 'sense-and-sensibility' },
-      update: {},
-      create: {
-        id: 'sense-and-sensibility',
+    prisma.book.create({
+      data: {
         title: 'Sense and Sensibility',
         author: 'Jane Austen',
         authorId: janeAusten.id,
