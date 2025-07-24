@@ -9,6 +9,7 @@
     "lint": "echo 'No lint configured for API'",
     "db:push": "npx prisma db push",
     "db:seed": "node prisma/seed.js",
+    "db:seed:simple": "node prisma/simple-seed.js",
     "db:studio": "npx prisma studio",
     "db:generate": "npx prisma generate"
   },
