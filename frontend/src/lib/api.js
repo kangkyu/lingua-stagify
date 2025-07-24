@@ -1,5 +1,8 @@
 // API client for database operations
-const API_BASE_URL = 'http://localhost:3001/api';
+// Use localhost:3001 for development, relative path for production
+const API_BASE_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:3001/api'
+  : '/api';
 
 // Helper function to handle API calls
 const apiCall = async (endpoint, options = {}) => {
