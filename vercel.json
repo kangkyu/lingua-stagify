@@ -2,7 +2,6 @@
   "buildCommand": "npm run frontend:build",
   "outputDirectory": "frontend/dist",
   "installCommand": "npm install",
-  "packageManager": "npm",
   "functions": {
     "api/**/*.js": {
       "runtime": "nodejs20.x"
