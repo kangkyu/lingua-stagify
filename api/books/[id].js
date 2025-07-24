@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
     try {
       const book = await prisma.book.findUnique({
         where: {
-          id: BigInt(id)
+          id: parseInt(id)
         },
         include: {
           authorUser: {
@@ -49,7 +49,7 @@ module.exports = async function handler(req, res) {
 
       // Transform the data to match frontend expectations
       const transformedBook = {
-        id: book.id.toString(),
+        id: book.id,
         title: book.title,
         author: book.author,
         coverImage: book.coverImage,
