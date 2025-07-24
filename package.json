@@ -22,7 +22,7 @@
     "db:push": "cd api && npx prisma db push",
     "db:seed": "cd api && node prisma/seed.js",
     "db:studio": "cd api && npx prisma studio",
-    "postinstall": "prisma generate"
+    "postinstall": "cd api && npx prisma generate"
   },
   "prisma": {
     "seed": "cd api && node prisma/seed.js"
