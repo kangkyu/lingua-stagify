@@ -60,7 +60,7 @@ module.exports = async function handler(req, res) {
         translationsCount: book.translations.length,
         bookmarksCount: book.bookmarks.length,
         translations: book.translations.map(translation => ({
-          id: translation.id.toString(),
+          id: translation.id,
           originalText: translation.originalText,
           translatedText: translation.translatedText,
           sourceLanguage: translation.sourceLanguage,
