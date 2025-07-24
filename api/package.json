@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Serverless API functions for Lingua Stagify",
   "scripts": {
-    "dev": "echo 'API functions ready - use Vercel CLI from root for local testing'",
+    "dev": "node dev-server.js",
     "build": "echo 'Serverless functions ready for deployment'",
     "lint": "echo 'No lint configured for API'",
     "db:push": "npx prisma db push",
