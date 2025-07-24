@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 
 // Create a global variable to prevent multiple instances in development
 const globalForPrisma = globalThis;
@@ -16,4 +16,4 @@ process.on('beforeExit', async () => {
   await prisma.$disconnect();
 });
 
-module.exports = prisma;
+export default prisma;
