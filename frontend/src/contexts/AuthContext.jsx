@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getGoogleAuthUrl, handleGoogleCallback } from '@/api/auth.js';
+import { getGoogleAuthUrl, handleGoogleCallback } from '@/lib/auth.js';
 
 const AuthContext = createContext();
 
