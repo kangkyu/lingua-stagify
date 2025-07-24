@@ -15,7 +15,7 @@
     "preview": "turbo preview --filter=frontend",
     "dev:all": "npm run dev:frontend & npm run dev:api",
     "dev:frontend": "turbo dev --filter=frontend",
-    "dev:api": "vercel dev api --listen 3001",
+    "dev:api": "cd api && npm run dev",
     "build:all": "turbo build",
     "frontend:dev": "turbo dev --filter=frontend",
     "frontend:build": "turbo build --filter=frontend",
