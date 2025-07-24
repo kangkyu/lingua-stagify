@@ -34,14 +34,14 @@ model Book {
   id          Int   @id @default(autoincrement())
   title       String
   author      String
-  coverImage  String?
+  coverImage  String? @map("cover_image")
   description String?
   language    String   @default("en")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  authorId     Int
+  authorId     Int @map("author_id")
   authorUser   User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
   translations Translation[]
   bookmarks    Bookmark[]
