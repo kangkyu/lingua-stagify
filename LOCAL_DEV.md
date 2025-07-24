@@ -33,15 +33,22 @@ npm run dev:api
 ```
 
 ### If API dev fails:
-The API uses serverless functions that work best on Vercel. For local development:
-1. The frontend works standalone with mock data
-2. For full OAuth testing, deploy to Vercel and test there
-3. Or use `vercel dev` from the root directory
+The API uses Vercel serverless functions. For local development:
+1. Make sure you have database connection configured
+2. Run `npm run db:push` to setup database schema
+3. Use `vercel dev api --listen 3001` for local API testing
+4. For full OAuth testing, deploy to Vercel and test there
 
 ## Environment Variables
 
 Create `.env.local` in the root:
 ```env
-VITE_GOOGLE_CLIENT_ID=your_client_id
-VITE_API_URL=http://localhost:3001
+# Frontend configuration
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+
+# Database configuration
+DATABASE_URL=your_postgresql_connection_string
+
+# Note: API URL is automatically set to window.location.origin
+# No need to set VITE_API_URL unless using external API
 ```
