@@ -37,7 +37,7 @@ module.exports = async function handler(req, res) {
 
       // Transform the data to match frontend expectations
       const transformedTranslations = translations.map(translation => ({
-        id: translation.id.toString(),
+        id: translation.id,
         originalText: translation.originalText,
         translatedText: translation.translatedText,
         sourceLanguage: translation.sourceLanguage,
@@ -48,7 +48,7 @@ module.exports = async function handler(req, res) {
         createdAt: translation.createdAt,
         bookTitle: translation.book.title,
         author: translation.book.author,
-        bookId: translation.book.id.toString(),
+        bookId: translation.book.id,
         coverImage: translation.book.coverImage,
         createdBy: translation.translator.name || translation.translator.email,
         createdDate: translation.createdAt.toLocaleDateString(),
