@@ -17,12 +17,12 @@ A modern translation management platform built with React and Google Auth, desig
 - **User Management**: Profile management and session handling
 
 ### Current Implementation Status
-✅ **Frontend Structure**: Complete React app with routing and UI components  
-✅ **Authentication Framework**: Google Auth context and UI integration  
-🔄 **Google Auth**: Basic implementation (needs Google API keys)  
-⏳ **Backend API**: Planned Node.js/Express + PostgreSQL  
+✅ **Frontend Structure**: Complete React app with routing and UI components
+✅ **Authentication Framework**: Google Auth context and UI integration
+✅ **Backend API**: Vercel serverless functions with Prisma ORM
+✅ **Database Schema**: PostgreSQL with Prisma (BigInt IDs, Users, Books, Translations, Bookmarks)
+🔄 **Google Auth**: Basic implementation (needs Google API keys)
 ⏳ **Translation Service**: Google Translate API integration planned  
-⏳ **Database**: PostgreSQL schema design needed  
 
 ## Tech Stack
 
@@ -33,18 +33,20 @@ A modern translation management platform built with React and Google Auth, desig
 - **Tailwind CSS** - Styling framework
 - **Lucide React** - Icon library
 
-### Planned Backend
-- **Node.js/Express** - API server
-- **PostgreSQL** - Primary database
+### Backend
+- **Vercel Serverless Functions** - API endpoints
+- **PostgreSQL** - Primary database (Supabase)
+- **Prisma ORM** - Database toolkit and type safety
 - **Google OAuth 2.0** - Authentication
-- **Google Translate API** - Translation service
-- **AWS S3/Firebase Storage** - File storage for covers
+- **Google Translate API** - Translation service (planned)
+- **Node.js 20** - Runtime environment
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- npm or yarn
+- Node.js 20+
+- npm (turbo for monorepo management)
+- PostgreSQL database (Supabase recommended)
 
 ### Installation
 
@@ -54,23 +56,45 @@ cd lingua-stagify
 npm install
 ```
 
-2. **Start development server**:
+2. **Database setup**:
 ```bash
-npm run dev
+# Push schema to database
+npm run db:push
+
+# Seed with sample data (optional)
+npm run db:seed
 ```
 
-3. **Open in browser**:
-Visit `http://localhost:5173`
+3. **Environment setup**:
+Create `.env.local`:
+```env
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+DATABASE_URL=your_postgresql_connection_string
+```
+
+4. **Start development servers**:
+```bash
+# Frontend + API
+npm run dev:all
+
+# Or separately:
+npm run dev:frontend  # http://localhost:5173
+npm run dev:api       # http://localhost:3001
+```
 
 ### Development Commands
-- `npm run dev` - Start development server
+- `npm run dev` - Start frontend development server
+- `npm run dev:all` - Start both frontend and API servers
+- `npm run dev:api` - Start API server only
 - `npm run build` - Build for production
-- `npm run preview` - Preview production build
+- `npm run db:push` - Push Prisma schema to database
+- `npm run db:seed` - Seed database with sample data
+- `npm run db:studio` - Open Prisma Studio
 
 ## Project Structure
 
 ```
-src/
+frontend/src/
 ├── components/
 │   ├── ui/           # Reusable UI components (Button, Card, Input, etc.)
 │   └── Layout.jsx    # Main app layout with navigation
@@ -85,8 +109,21 @@ src/
 │   ├── Profile.jsx   # User profile
 │   └── Bookmarks.jsx # Saved translations
 ├── lib/
+│   ├── api.js        # API client functions
+│   ├── auth.js       # Authentication utilities
+│   ├── config.js     # Application configuration
 │   └── utils.js      # Utility functions
 └── App.jsx          # Main app component with routing
+
+api/
+├── auth/            # Authentication endpoints
+├── books/           # Book CRUD endpoints
+├── translations/    # Translation CRUD endpoints
+├── lib/
+│   └── prisma.js    # Prisma client setup
+└── prisma/
+    ├── schema.prisma # Database schema
+    └── seed.js      # Database seeding script
 ```
 
 ## Key Features Implementation
@@ -118,14 +155,14 @@ src/
 
 To complete the application, implement:
 
-1. **Backend API**: Node.js/Express server with PostgreSQL
-2. **Google Auth Setup**: Configure OAuth credentials and complete integration
-3. **Translation API**: Google Translate service integration
-4. **Database Schema**: Design and implement data models
-5. **File Upload**: Cover image upload functionality
-6. **Real-time Features**: Live updates for likes/comments
-7. **Testing**: Unit and integration tests
-8. **Deployment**: Production deployment setup
+1. **Google Auth Setup**: Configure OAuth credentials and complete integration
+2. **Translation API**: Google Translate service integration
+3. **File Upload**: Cover image upload functionality (AWS S3/Vercel Blob)
+4. **Social Features**: Likes, comments, and user interactions
+5. **Real-time Features**: Live updates for likes/comments
+6. **Testing**: Unit and integration tests
+7. **Performance**: Caching and optimization
+8. **Monitoring**: Error tracking and analytics
 
 ## Contributing
 
