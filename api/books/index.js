@@ -1,9 +1,6 @@
-const prisma = require('../lib/prisma');
-const { handleCors } = require('../config');
+import prisma from '../lib/prisma.js';
 
-module.exports = async function handler(req, res) {
-  // Handle CORS
-  if (handleCors(req, res)) return;
+export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {

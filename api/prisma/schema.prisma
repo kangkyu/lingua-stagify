@@ -19,8 +19,8 @@ model User {
   email     String   @unique
   name      String?
   avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
   books       Book[]
@@ -34,14 +34,14 @@ model Book {
   id          Int   @id @default(autoincrement())
   title       String
   author      String
-  coverImage  String?
+  coverImage  String? @map("cover_image")
   description String?
   language    String   @default("en")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
-  authorId     Int
+  authorId     Int @map("author_id")
   authorUser   User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
   translations Translation[]
   bookmarks    Bookmark[]
@@ -51,20 +51,20 @@ model Book {
 
 model Translation {
   id           Int   @id @default(autoincrement())
-  originalText String
-  translatedText String
-  sourceLanguage String @default("en")
-  targetLanguage String
+  originalText String @map("original_text")
+  translatedText String @map("translated_text")
+  sourceLanguage String @default("en") @map("source_language")
+  targetLanguage String @map("target_language")
   context      String?
   chapter      String?
-  pageNumber   Int?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  pageNumber   Int? @map("page_number")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  bookId       Int
+  bookId       Int @map("book_id")
   book         Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  translatorId Int
+  translatorId Int @map("translator_id")
   translator   User      @relation(fields: [translatorId], references: [id], onDelete: Cascade)
   bookmarks    Bookmark[]
 
@@ -73,14 +73,14 @@ model Translation {
 
 model Bookmark {
   id        Int   @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
 
   // Relations
-  userId        Int
+  userId        Int @map("user_id")
   user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  translationId Int?
+  translationId Int? @map("translation_id")
   translation   Translation? @relation(fields: [translationId], references: [id], onDelete: Cascade)
-  bookId        Int?
+  bookId        Int? @map("book_id")
   book          Book?        @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
   @@unique([userId, translationId])

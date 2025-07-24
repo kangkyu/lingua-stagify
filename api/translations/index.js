@@ -1,12 +1,18 @@
-const prisma = require('../lib/prisma');
-const { handleCors } = require('../config');
+import prisma from '../lib/prisma.js';
 
-module.exports = async function handler(req, res) {
-  // Handle CORS
-  if (handleCors(req, res)) return;
+export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
+      // Check if we have any data in the database
+      const translationCount = await prisma.translation.count();
+
+      if (translationCount === 0) {
+        // Return empty array if no translations exist
+        res.status(200).json([]);
+        return;
+      }
+
       const translations = await prisma.translation.findMany({
         include: {
           book: {
