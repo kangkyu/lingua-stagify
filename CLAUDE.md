@@ -4,10 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-- `npm run dev` - Start Vite development server (http://localhost:5173)
+- `npm run dev` - Start frontend development server (http://localhost:5173)
+- `npm run dev:all` - Start both frontend and API servers
+- `npm run dev:api` - Start API server (http://localhost:3001)
 - `npm run build` - Build for production
 - `npm run lint` - Run ESLint
 - `npm run preview` - Preview production build
+- `npm run db:push` - Push Prisma schema to database
+- `npm run db:seed` - Seed database with sample data
 
 ## Architecture Overview
 
@@ -16,17 +20,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **React Router** for client-side routing
 - **Tailwind CSS** with custom UI components
 - **Context API** for state management (AuthContext)
+- **Vercel Serverless Functions** for API backend
+- **Prisma ORM** with PostgreSQL database
+- **Node.js 20** runtime environment
 - **Google OAuth** authentication (framework in place, needs API keys)
 
 ### Code Organization
 
-**Frontend-only React SPA** - This is a translation management platform frontend with no backend implementation yet.
+**Full-stack React application** - Translation management platform with React frontend and Vercel serverless API backend.
 
 **Component Architecture:**
 - `src/components/ui/` - Reusable UI components using shadcn/ui patterns with Tailwind
 - `src/components/Layout.jsx` - Main app layout with navigation
 - `src/pages/` - Route components for different app sections
 - `src/contexts/AuthContext.jsx` - Authentication state management with Google OAuth setup
+- `src/lib/` - API clients, authentication, configuration, and utilities
+- `api/` - Vercel serverless functions for backend API
+- `api/prisma/` - Database schema and seeding
 
 **Key Patterns:**
 - Path alias `@/` maps to `src/` directory (configured in vite.config.js)
@@ -51,14 +61,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development Notes
 
-**Current State:** Frontend-only implementation with mock data and authentication. The README indicates this is a learning project demonstrating React patterns with planned backend implementation.
+**Current State:** Full-stack implementation with React frontend and Vercel serverless backend. Database schema implemented with Prisma ORM. API endpoints available for books, translations, and authentication.
 
 **No Testing Setup:** No test commands or testing framework configured in package.json.
 
 **Key Dependencies:**
 - `lucide-react` for icons
 - `class-variance-authority` for component variants
-- `axios` for HTTP requests (backend integration ready)
+- `@prisma/client` for database operations
 - `google-auth-library` for OAuth (needs configuration)
+- Native `fetch` for API requests (no axios dependency)
 
 **Styling:** Uses Tailwind CSS with custom component library following shadcn/ui patterns.
