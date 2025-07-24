@@ -87,9 +87,6 @@ VITE_GOOGLE_CLIENT_ID=your_google_client_id
 
 # Database configuration
 DATABASE_URL=your_postgresql_connection_string
-
-# Note: API URL is automatically set to window.location.origin
-# No need to set VITE_API_URL unless using external API
 ```
 
 4. **Start development servers**:
@@ -220,15 +217,14 @@ npm run db:seed
 
 #### Step 2: Configure Environment Variables
 
-**Frontend (.env.local):**
+**Environment Variables (.env.local):**
 ```env
+# Authentication
 VITE_GOOGLE_CLIENT_ID="your_actual_google_client_id_here"
-```
-
-**Backend (.env.local):**
-```env
 GOOGLE_CLIENT_ID="your_actual_google_client_id_here"
 GOOGLE_CLIENT_SECRET="your_actual_google_client_secret_here"
+
+# Database
 DATABASE_URL="your_postgresql_connection_string"
 ```
 
