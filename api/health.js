@@ -1,14 +1,8 @@
-module.exports = function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+const { handleCors } = require('./config');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
+module.exports = function handler(req, res) {
+  // Handle CORS
+  if (handleCors(req, res)) return;
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
