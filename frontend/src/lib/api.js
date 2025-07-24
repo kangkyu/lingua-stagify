@@ -1,8 +1,5 @@
 // API client for database operations
-// Use VITE_API_URL environment variable for API base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL}/api`
-  : '/api';
+import { API_BASE_URL } from './config.js';
 
 // Helper function to handle API calls
 const apiCall = async (endpoint, options = {}) => {
