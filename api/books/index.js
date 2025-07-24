@@ -36,7 +36,7 @@ module.exports = async function handler(req, res) {
 
       // Transform the data to match frontend expectations
       const transformedBooks = books.map(book => ({
-        id: book.id.toString(),
+        id: book.id,
         title: book.title,
         author: book.author,
         coverImage: book.coverImage,
