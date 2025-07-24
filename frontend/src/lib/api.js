@@ -1,5 +1,5 @@
 // API client for database operations
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:3001/api';
 
 // Helper function to handle API calls
 const apiCall = async (endpoint, options = {}) => {
