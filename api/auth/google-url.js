@@ -1,28 +1,19 @@
-module.exports = function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+const { GOOGLE_CLIENT_ID, handleCors, validateGoogleConfig } = require('../config');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
+module.exports = function handler(req, res) {
+  // Handle CORS
+  if (handleCors(req, res)) return;
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-    const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+    validateGoogleConfig();
 
-    if (!GOOGLE_CLIENT_ID) {
-      return res.status(500).json({ error: 'Google OAuth not configured on server' });
-    }
-
-    const redirectUri = `${CLIENT_URL}/auth/callback`;
+    // Get redirect URI from request origin
+    const origin = req.headers.origin || req.headers.referer?.split('/')[0] + '//' + req.headers.referer?.split('/')[2] || 'http://localhost:5173';
+    const redirectUri = `${origin}/auth/callback`;
     const params = new URLSearchParams({
       client_id: GOOGLE_CLIENT_ID,
       redirect_uri: redirectUri,
