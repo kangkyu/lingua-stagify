@@ -51,20 +51,20 @@ model Book {
 
 model Translation {
   id           Int   @id @default(autoincrement())
-  originalText String
-  translatedText String
-  sourceLanguage String @default("en")
-  targetLanguage String
+  originalText String @map("original_text")
+  translatedText String @map("translated_text")
+  sourceLanguage String @default("en") @map("source_language")
+  targetLanguage String @map("target_language")
   context      String?
   chapter      String?
-  pageNumber   Int?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  pageNumber   Int? @map("page_number")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  bookId       Int
+  bookId       Int @map("book_id")
   book         Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  translatorId Int
+  translatorId Int @map("translator_id")
   translator   User      @relation(fields: [translatorId], references: [id], onDelete: Cascade)
   bookmarks    Bookmark[]
 
