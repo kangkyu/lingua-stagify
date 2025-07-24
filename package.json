@@ -13,7 +13,7 @@
     "build": "turbo build --filter=frontend",
     "lint": "turbo lint",
     "preview": "turbo preview --filter=frontend",
-    "dev:all": "npm run dev:frontend",
+    "dev:all": "npm run dev:frontend & npm run dev:api",
     "dev:frontend": "turbo dev --filter=frontend",
     "dev:api": "vercel dev api --listen 3001",
     "build:all": "turbo build",
