@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Users, Plus, Languages } from 'lucide-react';
-import { bookService } from '@/lib/database';
+import { bookService } from '@/lib/api';
 
 const BookDetail = () => {
   const { id } = useParams();

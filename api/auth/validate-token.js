@@ -1,16 +1,9 @@
 const { OAuth2Client } = require('google-auth-library');
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, handleCors, validateGoogleConfig } = require('../config');
 
 module.exports = async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL || '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
+  // Handle CORS
+  if (handleCors(req, res)) return;
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -23,12 +16,7 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'ID token is required' });
     }
 
-    const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-    const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-
-    if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      return res.status(500).json({ error: 'Google OAuth not configured on server' });
-    }
+    validateGoogleConfig();
 
     // Verify ID token with Google
     const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID);

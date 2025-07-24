@@ -21,7 +21,8 @@
     "frontend:build": "turbo build --filter=frontend",
     "db:push": "cd api && npx prisma db push",
     "db:seed": "cd api && node prisma/seed.js",
-    "db:studio": "cd api && npx prisma studio"
+    "db:studio": "cd api && npx prisma studio",
+    "postinstall": "cd api && npx prisma generate"
   },
   "prisma": {
     "seed": "cd api && node prisma/seed.js"
@@ -32,6 +33,6 @@
     "vercel": "^32.0.0"
   },
   "engines": {
-    "node": "22.x"
+    "node": ">=20.x"
   }
 }

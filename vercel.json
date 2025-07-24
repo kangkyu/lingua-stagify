@@ -2,8 +2,11 @@
   "buildCommand": "npm run frontend:build",
   "outputDirectory": "frontend/dist",
   "installCommand": "npm install",
-  "devCommand": "npm run dev:frontend",
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

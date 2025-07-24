@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Heart, MessageCircle, Bookmark, Search, Users } from 'lucide-react';
-import { translationService } from '@/lib/database';
+import { translationService } from '@/lib/api';
 
 const Feed = () => {
   const { user } = useAuth();
