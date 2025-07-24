@@ -91,12 +91,15 @@ DATABASE_URL=your_postgresql_connection_string
 
 4. **Start development servers**:
 ```bash
-# Frontend only (recommended for local development)
-npm run dev
+# Both frontend and API (recommended)
+npm run dev:all
 
-# Or run both separately in different terminals:
+# Or run separately in different terminals:
 npm run dev:frontend  # http://localhost:5173 (Terminal 1)
 npm run dev:api       # http://localhost:3001 (Terminal 2)
+
+# Frontend only (if you don't need API)
+npm run dev
 ```
 
 ### Development Commands
@@ -112,7 +115,7 @@ npm run dev:api       # http://localhost:3001 (Terminal 2)
 
 ```
 frontend/src/
-├── components/
+├��─ components/
 │   ├── ui/           # Reusable UI components (Button, Card, Input, etc.)
 │   └── Layout.jsx    # Main app layout with navigation
 ├── contexts/
