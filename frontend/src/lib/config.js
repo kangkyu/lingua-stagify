@@ -1,7 +1,6 @@
-// Shared configuration for the application
+// Frontend configuration
 
-// API Configuration
-// Always use current origin for API calls
+// API Configuration - always use current origin
 export const API_BASE_URL = `${window.location.origin}/api`;
 export const API_ROOT_URL = window.location.origin;
 
