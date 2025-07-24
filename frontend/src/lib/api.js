@@ -1,7 +1,7 @@
 // API client for database operations
-// Use localhost:3001 for development, relative path for production
-const API_BASE_URL = process.env.NODE_ENV === 'development'
-  ? 'http://localhost:3001/api'
+// Use VITE_API_URL environment variable for API base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
   : '/api';
 
 // Helper function to handle API calls
