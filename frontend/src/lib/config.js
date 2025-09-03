@@ -1,7 +1,7 @@
 // Frontend configuration
 
-// API Configuration - always use current origin
-export const API_BASE_URL = `${window.location.origin}/api`;
+// API Configuration - point to backend dev server
+export const API_BASE_URL = `http://localhost:3001`;
 export const API_ROOT_URL = window.location.origin;
 
 // Authentication Configuration

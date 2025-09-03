@@ -46,13 +46,15 @@ export default async function handler(req, res) {
         translations: book.translations
       }));
 
-      res.status(200).json(transformedBooks);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(transformedBooks));
     } catch (error) {
       console.error('Error fetching books:', error);
-      res.status(500).json({ error: 'Failed to fetch books' });
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Failed to fetch books' }));
     }
   } else {
-    res.setHeader('Allow', ['GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.writeHead(405, { 'Allow': 'GET' });
+    res.end(`Method ${req.method} Not Allowed`);
   }
 }

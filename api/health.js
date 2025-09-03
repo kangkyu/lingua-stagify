@@ -1,16 +1,14 @@
-const { handleCors } = require('./config');
-
-module.exports = function handler(req, res) {
-  // Handle CORS
-  if (handleCors(req, res)) return;
-
+export default function handler(req, res) {
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method not allowed' }));
+    return;
   }
 
-  res.json({ 
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    platform: 'vercel-serverless'
-  });
+    platform: 'dev-server'
+  }));
 }

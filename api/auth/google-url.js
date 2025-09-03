@@ -1,6 +1,6 @@
-const { GOOGLE_CLIENT_ID, handleCors, validateGoogleConfig } = require('../config');
+import { GOOGLE_CLIENT_ID, handleCors, validateGoogleConfig } from '../config.js';
 
-module.exports = function handler(req, res) {
+export default function handler(req, res) {
   // Handle CORS
   if (handleCors(req, res)) return;
 

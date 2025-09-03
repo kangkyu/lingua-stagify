@@ -1,14 +1,10 @@
-const { handleCors, GOOGLE_CLIENT_ID } = require('./config');
-
-module.exports = function handler(req, res) {
-  // Handle CORS
-  if (handleCors(req, res)) return;
-
-  res.json({ 
+export default function handler(req, res) {
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ 
     message: 'API is working!',
     timestamp: new Date().toISOString(),
     method: req.method,
     url: req.url,
-    hasGoogleClientId: !!GOOGLE_CLIENT_ID
-  });
+    hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID
+  }));
 }

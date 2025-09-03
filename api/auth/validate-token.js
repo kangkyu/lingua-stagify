@@ -1,7 +1,7 @@
-const { OAuth2Client } = require('google-auth-library');
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, handleCors, validateGoogleConfig } = require('../config');
+import { OAuth2Client } from 'google-auth-library';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, handleCors, validateGoogleConfig } from '../config.js';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Handle CORS
   if (handleCors(req, res)) return;
 
