@@ -20,7 +20,16 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "build/**"]
+      "outputs": ["dist/**", ".next/**", "build/**"],
+      "env": [
+        "DATABASE_URL",
+        "DIRECT_URL",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "GOOGLE_CLOUD_PROJECT_ID",
+        "VITE_GOOGLE_CLIENT_ID",
+        "VITE_API_ROOT_URL"
+      ]
     },
     "lint": {
       "outputs": []
