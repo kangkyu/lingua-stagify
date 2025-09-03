@@ -33,10 +33,10 @@ A modern translation management platform built with React and Google Auth, desig
 ### Current Implementation Status
 ✅ **Frontend Structure**: Complete React app with routing and UI components  
 ✅ **Authentication Framework**: Google Auth context and UI integration  
-✅ **Backend API**: Vercel serverless functions with Prisma ORM
-✅ **Database Schema**: PostgreSQL with Prisma (BigInt IDs, Users, Books, Translations, Bookmarks)
-🔄 **Google Auth**: Basic implementation (needs Google API keys)  
-⏳ **Translation Service**: Google Translate API integration planned
+✅ **Backend API**: Node.js dev server with Prisma ORM and CORS support
+✅ **Database Schema**: PostgreSQL with Prisma (Supabase integration)
+✅ **Google Auth**: Complete implementation with backend token validation
+✅ **Translation Service**: Google Translate API integration completed
 
 ## Tech Stack
 
@@ -48,11 +48,12 @@ A modern translation management platform built with React and Google Auth, desig
 - **Lucide React** - Icon library
 
 ### Backend
-- **Vercel Serverless Functions** - API endpoints
+- **Node.js Development Server** - Custom API server with CORS support
 - **PostgreSQL** - Primary database (Supabase)
 - **Prisma ORM** - Database toolkit and type safety
-- **Google OAuth 2.0** - Authentication
-- **Google Translate API** - Translation service (planned)
+- **Google OAuth 2.0** - Authentication with backend token validation
+- **Google Translate API** - Translation service integration
+- **Google Auth Library** - Server-side token verification
 - **Node.js 20** - Runtime environment
 
 ## Getting Started
@@ -80,13 +81,25 @@ npm run db:seed
 ```
 
 3. **Environment setup**:
-Create `.env.local`:
-```env
-# Frontend configuration
-VITE_GOOGLE_CLIENT_ID=your_google_client_id
 
-# Database configuration
-DATABASE_URL=your_postgresql_connection_string
+**Frontend** (`frontend/.env`):
+```env
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+VITE_API_ROOT_URL=http://localhost:3001
+```
+
+**Backend** (`backend/.env`):
+```env
+# Supabase Database
+DATABASE_URL="your_supabase_database_url"
+DIRECT_URL="your_supabase_direct_url"
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# Google Cloud Translation
+GOOGLE_CLOUD_PROJECT_ID=your_project_id
 ```
 
 4. **Start development servers**:
@@ -96,7 +109,7 @@ npm run dev:all
 
 # Or run separately in different terminals:
 npm run dev:frontend  # http://localhost:5173 (Terminal 1)
-npm run dev:api       # http://localhost:3001 (Terminal 2)
+npm run dev:backend   # http://localhost:3001 (Terminal 2)
 
 # Frontend only (if you don't need API)
 npm run dev
@@ -104,8 +117,8 @@ npm run dev
 
 ### Development Commands
 - `npm run dev` - Start frontend development server
-- `npm run dev:all` - Start both frontend and API servers
-- `npm run dev:api` - Start API server only
+- `npm run dev:all` - Start both frontend and backend servers
+- `npm run dev:backend` - Start backend server only
 - `npm run build` - Build for production
 - `npm run db:push` - Push Prisma schema to database
 - `npm run db:seed` - Seed database with sample data
@@ -135,23 +148,36 @@ frontend/src/
 │   └── utils.js      # Utility functions
 └── App.jsx          # Main app component with routing
 
-api/
+backend/
+├── dev-server.js    # Development server with CORS support
 ├── auth/            # Authentication endpoints
+│   ├── index.js     # Auth router
+│   └── validate-token.js  # Google token validation
 ├── books/           # Book CRUD endpoints
+│   ├── index.js     # List all books
+│   └── [id].js      # Get book by ID
 ├── translations/    # Translation CRUD endpoints
+│   ├── index.js     # List all translations
+│   └── book/[bookId].js  # Get translations by book
+├── translate.js     # Google Translate API endpoint
+├── health.js        # Health check endpoint
+├── debug.js         # Debug endpoint
 ├── lib/
-│   └── prisma.js    # Prisma client setup
-└── prisma/
-    ├── schema.prisma # Database schema
-    └── seed.js      # Database seeding script
+│   ├── prisma.js    # Prisma client setup
+│   └── index.js     # Library exports
+├── prisma/
+│   ├── schema.prisma # Database schema
+│   └── seed.js      # Database seeding script
+└── .env             # Backend environment variables
 ```
 
 ## Development
 
 ### Local Development URLs
 - **Frontend**: http://localhost:5173
-- **API**: http://localhost:3001/api/*
-- **Health Check**: http://localhost:3001/api/health
+- **Backend API**: http://localhost:3001/*
+- **Health Check**: http://localhost:3001/health
+- **Debug**: http://localhost:3001/debug
 
 ### Troubleshooting Development Issues
 
@@ -162,15 +188,15 @@ Run the services separately:
 npm run dev:frontend
 
 # Terminal 2  
-npm run dev:api
+npm run dev:backend
 ```
 
-#### If API dev fails:
-The API uses Vercel serverless functions. For local development:
-1. Make sure you have database connection configured
+#### If Backend dev fails:
+The backend uses a custom Node.js development server:
+1. Make sure you have database connection configured in `backend/.env`
 2. Run `npm run db:push` to setup database schema
-3. Use `vercel dev api --listen 3001` for local API testing
-4. For full OAuth testing, deploy to Vercel and test there
+3. Start the server: `cd backend && node dev-server.js`
+4. Check environment variables are properly loaded
 
 ## Database
 
@@ -263,46 +289,61 @@ DATABASE_URL="your_postgresql_connection_string"
 
 ### Architecture
 - **Frontend**: React + Vite built as static files with SPA routing
-- **Backend**: Pure serverless functions in `api/` directory
+- **Backend**: Pure serverless functions in `backend/` directory
 - **Database**: PostgreSQL with Prisma ORM
 - **Monorepo**: Single deployment for frontend + backend
 
-### Production API Endpoints
-- `GET /api/health` - Health check
-- `GET /api/books` - Get all books
-- `GET /api/books/:id` - Get book by ID
-- `GET /api/translations` - Get all translations
-- `GET /api/translations/book/:bookId` - Get translations by book
-- `GET /api/auth/google-url` - Get Google OAuth URL
-- `POST /api/auth/validate-token` - Validate Google ID token
+### API Endpoints
+- `GET /health` - Health check
+- `GET /debug` - Debug information
+- `GET /books` - Get all books
+- `GET /books/:id` - Get book by ID
+- `GET /translations` - Get all translations
+- `GET /translations/book/:bookId` - Get translations by book
+- `POST /translate` - Translate text using Google Translate API
+- `POST /auth/validate-token` - Validate Google ID token
 
 ## API Documentation
+
+### System API
+```bash
+# Health check
+GET /health
+
+# Debug information
+GET /debug
+```
 
 ### Books API
 ```bash
 # Get all books
-GET /api/books
+GET /books
 
 # Get specific book with translations
-GET /api/books/:id
+GET /books/:id
 ```
 
 ### Translations API
 ```bash
 # Get all translations
-GET /api/translations
+GET /translations
 
 # Get translations for specific book
-GET /api/translations/book/:bookId
+GET /translations/book/:bookId
+
+# Translate text
+POST /translate
+Content-Type: application/json
+{
+  "text": "Hello world",
+  "targetLanguage": "es"
+}
 ```
 
 ### Authentication API
 ```bash
-# Get Google OAuth URL
-GET /api/auth/google-url
-
 # Validate Google ID token
-POST /api/auth/validate-token
+POST /auth/validate-token
 Content-Type: application/json
 {
   "idToken": "google_id_token"
@@ -339,15 +380,20 @@ Content-Type: application/json
 - Verify `package.json` workspaces configuration
 
 #### CORS Issues
-- Verify domain configuration in Google OAuth settings
-- Check API function CORS headers in `api/` directory
+- CORS is configured in the development server
+- For production, ensure proper CORS headers are set
+
+#### Backend Server Issues
+- Check that `backend/.env` file exists with proper environment variables
+- Ensure `dotenv` is installed: `cd backend && npm install dotenv`
+- Verify Prisma client is generated: `npm run postinstall`
 
 ## Next Steps
 
 To complete the application, implement:
 
-1. **Google Auth Setup**: Configure OAuth credentials and complete integration
-2. **Translation API**: Google Translate service integration
+1. ✅ **Google Auth Setup**: OAuth credentials configured and backend validation complete
+2. ✅ **Translation API**: Google Translate service integration complete
 3. **File Upload**: Cover image upload functionality (AWS S3/Vercel Blob)
 4. **Social Features**: Likes, comments, and user interactions
 5. **Real-time Features**: Live updates for likes/comments
