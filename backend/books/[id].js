@@ -1,9 +1,6 @@
-const prisma = require('../lib/prisma');
-const { handleCors } = require('../config');
+import prisma from '../lib/prisma.js';
 
-module.exports = async function handler(req, res) {
-  // Handle CORS
-  if (handleCors(req, res)) return;
+export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     const { id } = req.query;
@@ -44,7 +41,9 @@ module.exports = async function handler(req, res) {
       });
 
       if (!book) {
-        return res.status(404).json({ error: 'Book not found' });
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Book not found' }));
+        return;
       }
 
       // Transform the data to match frontend expectations
@@ -74,13 +73,15 @@ module.exports = async function handler(req, res) {
         }))
       };
 
-      res.status(200).json(transformedBook);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(transformedBook));
     } catch (error) {
       console.error('Error fetching book:', error);
-      res.status(500).json({ error: 'Failed to fetch book' });
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Failed to fetch book' }));
     }
   } else {
-    res.setHeader('Allow', ['GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.writeHead(405, { 'Allow': 'GET' });
+    res.end(`Method ${req.method} Not Allowed`);
   }
 }
