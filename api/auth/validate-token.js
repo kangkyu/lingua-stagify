@@ -1,22 +1,28 @@
 import { OAuth2Client } from 'google-auth-library';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, handleCors, validateGoogleConfig } from '../config.js';
 
 export default async function handler(req, res) {
-  // Handle CORS
-  if (handleCors(req, res)) return;
-
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method not allowed' }));
+    return;
   }
 
   try {
     const { idToken } = req.body;
 
     if (!idToken) {
-      return res.status(400).json({ error: 'ID token is required' });
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'ID token is required' }));
+      return;
     }
 
-    validateGoogleConfig();
+    const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    
+    if (!GOOGLE_CLIENT_ID) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Google Client ID not configured' }));
+      return;
+    }
 
     // Verify ID token with Google
     const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -42,16 +48,18 @@ export default async function handler(req, res) {
     // Generate session token
     const sessionToken = `session_${payload.sub}_${Date.now()}`;
 
-    res.json({
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
       success: true,
       user,
       sessionToken
-    });
+    }));
   } catch (error) {
     console.error('Token validation error:', error.message);
-    res.status(401).json({
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
       success: false,
       error: 'Invalid token or authentication failed'
-    });
+    }));
   }
 }
