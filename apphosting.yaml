@@ -22,15 +22,15 @@ env:
   - variable: NODE_ENV
     value: production
   - variable: GOOGLE_CLOUD_PROJECT_ID
-    secret: GOOGLE_CLOUD_PROJECT_ID
+    secret: projects/359757699589/secrets/GOOGLE_CLOUD_PROJECT_ID
   - variable: DATABASE_URL
-    secret: DATABASE_URL
+    secret: projects/359757699589/secrets/DATABASE_URL
   - variable: DIRECT_URL
-    secret: DIRECT_URL
+    secret: projects/359757699589/secrets/DIRECT_URL
   - variable: GOOGLE_CLIENT_ID
-    secret: GOOGLE_CLIENT_ID
+    secret: projects/359757699589/secrets/GOOGLE_CLIENT_ID
   - variable: GOOGLE_CLIENT_SECRET
-    secret: GOOGLE_CLIENT_SECRET
+    secret: projects/359757699589/secrets/GOOGLE_CLIENT_SECRET
 
 # Build configuration
 build:
