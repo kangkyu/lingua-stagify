@@ -272,37 +272,6 @@ DATABASE_URL="your_postgresql_connection_string"
 5. Frontend exchanges the code directly with Google for user info
 6. User data is stored in localStorage for session management
 
-## Deployment
-
-### Quick Deploy to Vercel
-
-1. **Connect to Vercel:**
-   ```bash
-   npx vercel --prod
-   ```
-
-2. **Set Environment Variables in Vercel Dashboard:**
-   - `VITE_GOOGLE_CLIENT_ID` - Your Google OAuth Client ID
-   - `GOOGLE_CLIENT_ID` - Same as above (for backend)
-   - `GOOGLE_CLIENT_SECRET` - Your Google OAuth Client Secret
-   - `DATABASE_URL` - Your PostgreSQL connection string
-
-### Architecture
-- **Frontend**: React + Vite built as static files with SPA routing
-- **Backend**: Pure serverless functions in `backend/` directory
-- **Database**: PostgreSQL with Prisma ORM
-- **Monorepo**: Single deployment for frontend + backend
-
-### API Endpoints
-- `GET /health` - Health check
-- `GET /debug` - Debug information
-- `GET /books` - Get all books
-- `GET /books/:id` - Get book by ID
-- `GET /translations` - Get all translations
-- `GET /translations/book/:bookId` - Get translations by book
-- `POST /translate` - Translate text using Google Translate API
-- `POST /auth/validate-token` - Validate Google ID token
-
 ## API Documentation
 
 ### System API
