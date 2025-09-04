@@ -1,12 +1,14 @@
 {
-  "name": "api",
+  "name": "backend",
   "version": "1.0.0",
   "type": "module",
-  "description": "Serverless API functions for Lingua Stagify",
+  "main": "server.js",
+  "description": "Backend API server for Lingua Stagify",
   "scripts": {
     "dev": "node dev-server.js",
-    "build": "echo 'Serverless functions ready for deployment'",
-    "lint": "echo 'No lint configured for API'",
+    "start": "node server.js",
+    "build": "echo 'Backend ready for deployment'",
+    "lint": "echo 'No lint configured for backend'",
     "db:push": "npx prisma db push",
     "db:seed": "node prisma/seed.js",
     "db:seed:simple": "node prisma/simple-seed.js",

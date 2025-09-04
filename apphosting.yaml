@@ -1,0 +1,43 @@
+# Google Cloud App Hosting configuration
+# https://firebase.google.com/docs/app-hosting/get-started
+
+runConfig:
+  # CPU and memory allocation
+  cpu: 1
+  memoryMiB: 512
+  # Minimum instances to keep warm
+  minInstances: 0
+  maxInstances: 10
+  # Concurrency - number of requests per instance
+  concurrency: 80
+
+env:
+  # Environment variables will be set in Firebase console
+  # Required variables:
+  # - DATABASE_URL
+  # - DIRECT_URL  
+  # - GOOGLE_CLIENT_ID
+  # - GOOGLE_CLIENT_SECRET
+  # - GOOGLE_CLOUD_PROJECT_ID
+  - variable: NODE_ENV
+    value: production
+
+# Build configuration
+build:
+  # Root directory for the build
+  rootDirectory: .
+  
+  # Build commands
+  buildCommand: |
+    # Install root dependencies
+    npm install
+    # Install backend dependencies and generate Prisma client
+    cd backend
+    npm install
+    npx prisma generate
+  
+  # Output directory (backend contains the server)
+  outputDirectory: backend
+  
+  # Start command
+  startCommand: npm start

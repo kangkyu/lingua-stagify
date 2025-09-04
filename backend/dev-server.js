@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 8080 : 3001);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,6 +84,8 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`API development server running at http://localhost:${PORT}`);
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+
+server.listen(PORT, HOST, () => {
+  console.log(`API server running at http://${HOST}:${PORT}`);
 });
