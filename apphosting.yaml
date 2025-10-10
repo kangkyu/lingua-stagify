@@ -33,9 +33,7 @@ build:
   
   # Build commands
   buildCommand: |
-    # Install root dependencies
-    npm install
-    # Install backend dependencies and generate Prisma client
+    # Install backend dependencies directly
     cd backend
     npm install
     npx prisma generate
