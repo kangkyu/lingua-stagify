@@ -12,7 +12,6 @@
     ]
   },
   "hosting": {
-    "site": "lingua-stagify",
     "public": "frontend/dist",
     "ignore": [
       "firebase.json",

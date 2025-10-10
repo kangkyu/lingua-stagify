@@ -35,3 +35,4 @@ backend/.env
 src/generated/
 
 .vercel
+.firebase/
