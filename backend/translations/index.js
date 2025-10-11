@@ -2,6 +2,7 @@ import prisma from '../lib/prisma.js';
 import { authenticateUser } from '../auth/middleware.js';
 
 export default async function handler(req, res) {
+  console.log('Request method:', req.method, 'Type:', typeof req.method);
 
   if (req.method === 'GET') {
     try {

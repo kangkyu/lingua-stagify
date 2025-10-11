@@ -30,6 +30,16 @@ export const translationService = {
 
   async getTranslationsByBook(bookId) {
     return await apiCall(`/translations/book/${bookId}`);
+  },
+
+  async createTranslation(translationData, idToken) {
+    return await apiCall('/translations', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${idToken}`
+      },
+      body: JSON.stringify(translationData)
+    });
   }
 };
 

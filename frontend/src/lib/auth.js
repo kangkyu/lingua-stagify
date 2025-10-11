@@ -47,7 +47,8 @@ export const handleGoogleCallback = async () => {
     return {
       success: true,
       user: data.user,
-      sessionToken: data.sessionToken
+      sessionToken: data.sessionToken,
+      idToken: idToken  // Pass the original ID token for API calls
     };
   } catch (error) {
     console.error('OAuth callback error:', error);
