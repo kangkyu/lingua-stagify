@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "dev": "turbo dev --filter=frontend",
-    "build": "turbo build --filter=frontend",
+    "build": "cd backend && npm run build",
     "lint": "turbo lint",
     "preview": "turbo preview --filter=frontend",
     "dev:all": "npm run dev:frontend & npm run dev:backend",
