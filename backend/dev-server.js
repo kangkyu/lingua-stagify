@@ -24,7 +24,7 @@ const server = http.createServer(async (req, res) => {
 
   const { url } = req;
   const [urlPath, queryString] = url.split('?');
-  
+
   const queryParams = new URLSearchParams(queryString);
   req.query = Object.fromEntries(queryParams.entries());
 
