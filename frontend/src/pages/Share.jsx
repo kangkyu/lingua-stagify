@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Languages, Send, Sparkles } from 'lucide-react';
 
 const Share = () => {
-  const { user, sessionToken, idToken } = useAuth();
+  const { user, sessionToken } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit');
@@ -104,7 +104,7 @@ const Share = () => {
         language: formData.targetLanguage
       };
 
-      const result = await bookService.createBook(bookData, idToken);
+      const result = await bookService.createBook(bookData, sessionToken);
 
       // Add the new book to the list
       setBooks([...books, result]);
@@ -161,7 +161,7 @@ const Share = () => {
       return;
     }
 
-    if (!idToken) {
+    if (!sessionToken) {
       alert('You must be signed in to create a translation.');
       return;
     }
@@ -179,10 +179,10 @@ const Share = () => {
 
       let result;
       if (isEditMode) {
-        result = await translationService.updateTranslation(editId, translationData, idToken);
+        result = await translationService.updateTranslation(editId, translationData, sessionToken);
         alert('Translation updated successfully!');
       } else {
-        result = await translationService.createTranslation(translationData, idToken);
+        result = await translationService.createTranslation(translationData, sessionToken);
         alert('Translation created successfully!');
       }
 

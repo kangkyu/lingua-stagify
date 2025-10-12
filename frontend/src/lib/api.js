@@ -36,21 +36,21 @@ export const translationService = {
     return await apiCall(`/translations/${id}`);
   },
 
-  async createTranslation(translationData, idToken) {
+  async createTranslation(translationData, sessionToken) {
     return await apiCall('/translations', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${idToken}`
+        'Authorization': `Bearer ${sessionToken}`
       },
       body: JSON.stringify(translationData)
     });
   },
 
-  async updateTranslation(id, translationData, idToken) {
+  async updateTranslation(id, translationData, sessionToken) {
     return await apiCall(`/translations/${id}`, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${idToken}`
+        'Authorization': `Bearer ${sessionToken}`
       },
       body: JSON.stringify(translationData)
     });
@@ -66,11 +66,11 @@ export const bookService = {
     return await apiCall(`/books/${id}`);
   },
 
-  async createBook(bookData, idToken) {
+  async createBook(bookData, sessionToken) {
     return await apiCall('/books', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${idToken}`
+        'Authorization': `Bearer ${sessionToken}`
       },
       body: JSON.stringify(bookData)
     });
