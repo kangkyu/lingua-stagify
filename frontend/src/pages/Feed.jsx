@@ -3,11 +3,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Heart, MessageCircle, Bookmark, Search, Users } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark, Search, Users, Edit } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { translationService } from '@/lib/api';
 
 const Feed = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [translations, setTranslations] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('recent');
@@ -248,6 +250,17 @@ const Feed = () => {
                               <Bookmark className="w-3 h-3" />
                             </Button>
                           </div>
+                          {user && user.email === translation.translatorEmail && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-slate-600 hover:text-teal-600 h-6 px-2"
+                              onClick={() => navigate(`/share?edit=${translation.id}`)}
+                            >
+                              <Edit className="w-3 h-3 mr-1" />
+                              Edit
+                            </Button>
+                          )}
                         </div>
                       </div>
 
