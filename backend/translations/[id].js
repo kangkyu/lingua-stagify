@@ -2,17 +2,12 @@ import prisma from '../lib/prisma.js';
 import { authenticateUser } from '../auth/middleware.js';
 
 export default async function handler(req, res) {
+  const { id } = req.query;
+
   if (req.method === 'GET') {
     try {
-      const translationCount = await prisma.translation.count();
-
-      if (translationCount === 0) {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify([]));
-        return;
-      }
-
-      const translations = await prisma.translation.findMany({
+      const translation = await prisma.translation.findUnique({
+        where: { id: parseInt(id) },
         include: {
           book: {
             select: {
@@ -28,19 +23,18 @@ export default async function handler(req, res) {
               name: true,
               email: true
             }
-          },
-          bookmarks: {
-            select: {
-              id: true
-            }
           }
-        },
-        orderBy: {
-          createdAt: 'desc'
         }
       });
 
-      const transformedTranslations = translations.map(translation => ({
+      if (!translation) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Translation not found' }));
+        return;
+      }
+
+      // Transform response
+      const response = {
         id: translation.id,
         originalText: translation.originalText,
         translatedText: translation.translatedText,
@@ -55,22 +49,17 @@ export default async function handler(req, res) {
         bookId: translation.book.id,
         coverImage: translation.book.coverImage,
         createdBy: translation.translator.name || translation.translator.email,
-        translatorEmail: translation.translator.email,
-        translatorId: translation.translator.id,
-        createdDate: translation.createdAt.toLocaleDateString(),
-        likesCount: 0, // TODO: Implement likes system
-        commentsCount: 0, // TODO: Implement comments system
-        tags: [translation.sourceLanguage, translation.targetLanguage, 'classic'] // TODO: Implement dynamic tags
-      }));
+        createdDate: translation.createdAt.toLocaleDateString()
+      };
 
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(transformedTranslations));
+      res.end(JSON.stringify(response));
     } catch (error) {
-      console.error('Error fetching translations:', error);
+      console.error('Error fetching translation:', error);
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Failed to fetch translations' }));
+      res.end(JSON.stringify({ error: 'Failed to fetch translation' }));
     }
-  } else if (req.method === 'POST') {
+  } else if (req.method === 'PUT') {
     // Authenticate user
     const authResult = await authenticateUser(req, res);
 
@@ -83,6 +72,23 @@ export default async function handler(req, res) {
     const user = authResult.user;
 
     try {
+      // Check if translation exists and belongs to user
+      const existingTranslation = await prisma.translation.findUnique({
+        where: { id: parseInt(id) }
+      });
+
+      if (!existingTranslation) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Translation not found' }));
+        return;
+      }
+
+      if (existingTranslation.translatorId !== user.id) {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'You can only edit your own translations' }));
+        return;
+      }
+
       const {
         originalText,
         translatedText,
@@ -114,8 +120,9 @@ export default async function handler(req, res) {
         return;
       }
 
-      // Create translation
-      const translation = await prisma.translation.create({
+      // Update translation
+      const translation = await prisma.translation.update({
+        where: { id: parseInt(id) },
         data: {
           originalText,
           translatedText,
@@ -124,8 +131,7 @@ export default async function handler(req, res) {
           context,
           chapter,
           pageNumber: pageNumber ? parseInt(pageNumber) : null,
-          bookId: parseInt(bookId),
-          translatorId: user.id
+          bookId: parseInt(bookId)
         },
         include: {
           book: {
@@ -165,15 +171,15 @@ export default async function handler(req, res) {
         createdDate: translation.createdAt.toLocaleDateString()
       };
 
-      res.writeHead(201, { 'Content-Type': 'application/json' });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(response));
     } catch (error) {
-      console.error('Error creating translation:', error);
+      console.error('Error updating translation:', error);
       res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Failed to create translation' }));
+      res.end(JSON.stringify({ error: 'Failed to update translation' }));
     }
   } else {
-    res.writeHead(405, { 'Allow': 'GET, POST' });
+    res.writeHead(405, { 'Allow': 'GET, PUT' });
     res.end(`Method ${req.method} Not Allowed`);
   }
 }

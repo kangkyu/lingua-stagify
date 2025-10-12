@@ -25,8 +25,20 @@ model User {
   books       Book[]
   translations Translation[]
   bookmarks   Bookmark[]
+  sessions    Session[]
 
   @@map("users")
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int      @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sessions")
 }
 
 model Book {

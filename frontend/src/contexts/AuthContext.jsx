@@ -15,13 +15,11 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sessionToken, setSessionToken] = useState(null);
-  const [idToken, setIdToken] = useState(null);
 
   // Initialize user and session from localStorage on app load
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     const savedSessionToken = localStorage.getItem('sessionToken');
-    const savedIdToken = localStorage.getItem('idToken');
 
     if (savedUser) {
       try {
@@ -29,14 +27,10 @@ export const AuthProvider = ({ children }) => {
         if (savedSessionToken) {
           setSessionToken(savedSessionToken);
         }
-        if (savedIdToken) {
-          setIdToken(savedIdToken);
-        }
       } catch (error) {
         console.error('Failed to parse saved user:', error);
         localStorage.removeItem('user');
         localStorage.removeItem('sessionToken');
-        localStorage.removeItem('idToken');
       }
     }
     setLoading(false);
@@ -70,12 +64,6 @@ export const AuthProvider = ({ children }) => {
           localStorage.setItem('sessionToken', result.sessionToken);
         }
 
-        // Store ID token for authenticated API calls
-        if (result.idToken) {
-          setIdToken(result.idToken);
-          localStorage.setItem('idToken', result.idToken);
-        }
-
         return { success: true };
       } else {
         return { success: false, error: result.error };
@@ -92,10 +80,8 @@ export const AuthProvider = ({ children }) => {
     try {
       setUser(null);
       setSessionToken(null);
-      setIdToken(null);
       localStorage.removeItem('user');
       localStorage.removeItem('sessionToken');
-      localStorage.removeItem('idToken');
     } catch (error) {
       console.error('Sign out failed:', error);
     }
@@ -105,7 +91,6 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     sessionToken,
-    idToken,
     signInWithGoogle,
     signOut,
     handleAuthCallback,

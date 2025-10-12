@@ -1,4 +1,5 @@
 import { OAuth2Client } from 'google-auth-library';
+import prisma from '../lib/prisma.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -37,16 +38,49 @@ export default async function handler(req, res) {
       throw new Error('Invalid ID token');
     }
 
-    // Create user object from validated Google data
-    const user = {
-      id: `google_${payload.sub}`,
-      email: payload.email,
-      name: payload.name,
-      avatar: payload.picture
-    };
+    // Find or create user in database
+    let dbUser = await prisma.user.findUnique({
+      where: { email: payload.email }
+    });
 
-    // Generate session token
-    const sessionToken = `session_${payload.sub}_${Date.now()}`;
+    if (!dbUser) {
+      dbUser = await prisma.user.create({
+        data: {
+          email: payload.email,
+          name: payload.name,
+          avatar: payload.picture
+        }
+      });
+    } else {
+      // Update user info if changed
+      dbUser = await prisma.user.update({
+        where: { email: payload.email },
+        data: {
+          name: payload.name,
+          avatar: payload.picture
+        }
+      });
+    }
+
+    // Generate session token and store in database
+    const sessionToken = `session_${dbUser.id}_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+    await prisma.session.create({
+      data: {
+        token: sessionToken,
+        userId: dbUser.id,
+        expiresAt
+      }
+    });
+
+    // Create user object for response
+    const user = {
+      id: dbUser.id,
+      email: dbUser.email,
+      name: dbUser.name,
+      avatar: dbUser.avatar
+    };
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({

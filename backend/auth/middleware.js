@@ -1,10 +1,7 @@
-import { OAuth2Client } from 'google-auth-library';
 import prisma from '../lib/prisma.js';
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-
 /**
- * Middleware to verify Google ID token and attach user to request
+ * Middleware to verify session token and attach user to request
  * Expects Authorization header with Bearer token
  */
 export async function authenticateUser(req, res) {
@@ -23,48 +20,26 @@ export async function authenticateUser(req, res) {
       return { error: 'Token missing', statusCode: 401 };
     }
 
-    if (!GOOGLE_CLIENT_ID) {
-      return { error: 'Google Client ID not configured', statusCode: 500 };
-    }
-
-    // Verify ID token with Google
-    const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID);
-    const ticket = await oauth2Client.verifyIdToken({
-      idToken: token,
-      audience: GOOGLE_CLIENT_ID
+    // Find session in database
+    const session = await prisma.session.findUnique({
+      where: { token },
+      include: { user: true }
     });
 
-    const payload = ticket.getPayload();
-
-    if (!payload) {
-      return { error: 'Invalid token', statusCode: 401 };
+    if (!session) {
+      return { error: 'Invalid session token', statusCode: 401 };
     }
 
-    // Find or create user in database
-    let user = await prisma.user.findUnique({
-      where: { email: payload.email }
-    });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email: payload.email,
-          name: payload.name,
-          avatar: payload.picture
-        }
+    // Check if session has expired
+    if (new Date() > session.expiresAt) {
+      // Delete expired session
+      await prisma.session.delete({
+        where: { id: session.id }
       });
-    } else {
-      // Update user info if changed
-      user = await prisma.user.update({
-        where: { email: payload.email },
-        data: {
-          name: payload.name,
-          avatar: payload.picture
-        }
-      });
+      return { error: 'Session expired', statusCode: 401 };
     }
 
-    return { user };
+    return { user: session.user };
   } catch (error) {
     console.error('Authentication error:', error.message);
     return { error: 'Authentication failed', statusCode: 401 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { translationService, bookService } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,8 +9,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Languages, Send, Sparkles } from 'lucide-react';
 
 const Share = () => {
-  const { user, sessionToken, idToken } = useAuth();
+  const { user, sessionToken } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('edit');
+  const isEditMode = !!editId;
+
   const [formData, setFormData] = useState({
     bookId: '',
     originalText: '',
@@ -22,8 +26,15 @@ const Share = () => {
   });
   const [books, setBooks] = useState([]);
   const [isLoadingBooks, setIsLoadingBooks] = useState(true);
+  const [isLoadingTranslation, setIsLoadingTranslation] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCreateBook, setShowCreateBook] = useState(false);
+  const [newBookData, setNewBookData] = useState({
+    title: '',
+    author: '',
+    description: ''
+  });
 
   // Fetch books on component mount
   useEffect(() => {
@@ -41,6 +52,34 @@ const Share = () => {
     fetchBooks();
   }, []);
 
+  // Load translation if in edit mode
+  useEffect(() => {
+    if (isEditMode && editId) {
+      const loadTranslation = async () => {
+        try {
+          setIsLoadingTranslation(true);
+          const translation = await translationService.getTranslationById(editId);
+          setFormData({
+            bookId: translation.bookId.toString(),
+            originalText: translation.originalText,
+            translatedText: translation.translatedText,
+            sourceLanguage: translation.sourceLanguage,
+            targetLanguage: translation.targetLanguage,
+            context: translation.context || '',
+            tags: []
+          });
+        } catch (error) {
+          console.error('Failed to load translation:', error);
+          alert('Failed to load translation. Please try again.');
+        } finally {
+          setIsLoadingTranslation(false);
+        }
+      };
+
+      loadTranslation();
+    }
+  }, [isEditMode, editId]);
+
   if (!user) {
     return (
       <div className="text-center py-12">
@@ -50,6 +89,39 @@ const Share = () => {
       </div>
     );
   }
+
+  const handleCreateBook = async () => {
+    if (!newBookData.title || !newBookData.author) {
+      alert('Please enter both title and author for the book.');
+      return;
+    }
+
+    try {
+      const bookData = {
+        title: newBookData.title,
+        author: newBookData.author,
+        description: newBookData.description || '',
+        language: formData.targetLanguage
+      };
+
+      const result = await bookService.createBook(bookData, sessionToken);
+
+      // Add the new book to the list
+      setBooks([...books, result]);
+
+      // Select the new book
+      setFormData({ ...formData, bookId: result.id.toString() });
+
+      // Reset and hide the form
+      setNewBookData({ title: '', author: '', description: '' });
+      setShowCreateBook(false);
+
+      alert('Book created successfully!');
+    } catch (error) {
+      console.error('Failed to create book:', error);
+      alert('Failed to create book. Please try again.');
+    }
+  };
 
   const handleTranslate = async () => {
     if (!formData.originalText || !formData.targetLanguage) {
@@ -89,7 +161,7 @@ const Share = () => {
       return;
     }
 
-    if (!idToken) {
+    if (!sessionToken) {
       alert('You must be signed in to create a translation.');
       return;
     }
@@ -105,57 +177,110 @@ const Share = () => {
         context: formData.context || null
       };
 
-      const result = await translationService.createTranslation(translationData, idToken);
-
-      alert('Translation created successfully!');
-
-      // Navigate to the book detail page or feed
-      if (result.bookId) {
-        navigate(`/books/${result.bookId}`);
+      let result;
+      if (isEditMode) {
+        result = await translationService.updateTranslation(editId, translationData, sessionToken);
+        alert('Translation updated successfully!');
       } else {
-        navigate('/feed');
+        result = await translationService.createTranslation(translationData, sessionToken);
+        alert('Translation created successfully!');
       }
+
+      // Navigate to the feed
+      navigate('/feed');
     } catch (error) {
-      console.error('Failed to create translation:', error);
-      alert('Failed to create translation. Please try again.');
+      console.error(`Failed to ${isEditMode ? 'update' : 'create'} translation:`, error);
+      alert(`Failed to ${isEditMode ? 'update' : 'create'} translation. Please try again.`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (isLoadingTranslation) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-slate-500">Loading translation...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Share a Translation</h1>
-        <p className="text-slate-600">Add a new translation to help others learn.</p>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">
+          {isEditMode ? 'Edit Translation' : 'Share a Translation'}
+        </h1>
+        <p className="text-slate-600">
+          {isEditMode ? 'Update your translation details.' : 'Add a new translation to help others learn.'}
+        </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Create Translation</CardTitle>
+          <CardTitle>{isEditMode ? 'Edit Translation' : 'Create Translation'}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Select Book
-              </label>
-              <select
-                value={formData.bookId}
-                onChange={(e) => setFormData({ ...formData, bookId: e.target.value })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-                required
-                disabled={isLoadingBooks}
-              >
-                <option value="">
-                  {isLoadingBooks ? 'Loading books...' : 'Choose a book...'}
-                </option>
-                {books.map((book) => (
-                  <option key={book.id} value={book.id}>
-                    {book.title} - {book.author}
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-slate-700">
+                  Select Book
+                </label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowCreateBook(!showCreateBook)}
+                  className="text-teal-600 hover:text-teal-700"
+                >
+                  {showCreateBook ? 'Cancel' : '+ Create New Book'}
+                </Button>
+              </div>
+
+              {showCreateBook ? (
+                <div className="space-y-3 p-4 bg-slate-50 rounded-md">
+                  <Input
+                    value={newBookData.title}
+                    onChange={(e) => setNewBookData({ ...newBookData, title: e.target.value })}
+                    placeholder="Book title"
+                  />
+                  <Input
+                    value={newBookData.author}
+                    onChange={(e) => setNewBookData({ ...newBookData, author: e.target.value })}
+                    placeholder="Author name"
+                  />
+                  <Textarea
+                    rows={2}
+                    value={newBookData.description}
+                    onChange={(e) => setNewBookData({ ...newBookData, description: e.target.value })}
+                    placeholder="Description (optional)"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleCreateBook}
+                    className="w-full bg-teal-500 hover:bg-teal-600"
+                  >
+                    Create Book
+                  </Button>
+                </div>
+              ) : (
+                <select
+                  value={formData.bookId}
+                  onChange={(e) => setFormData({ ...formData, bookId: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  required
+                  disabled={isLoadingBooks}
+                >
+                  <option value="">
+                    {isLoadingBooks ? 'Loading books...' : 'Choose a book...'}
                   </option>
-                ))}
-              </select>
+                  {books.map((book) => (
+                    <option key={book.id} value={book.id}>
+                      {book.title} - {book.author}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -239,7 +364,10 @@ const Share = () => {
               disabled={isSubmitting}
             >
               <Send className="w-4 h-4 mr-2" />
-              {isSubmitting ? 'Creating...' : 'Share Translation'}
+              {isSubmitting
+                ? (isEditMode ? 'Updating...' : 'Creating...')
+                : (isEditMode ? 'Update Translation' : 'Share Translation')
+              }
             </Button>
           </form>
         </CardContent>
