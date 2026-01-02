@@ -27,10 +27,8 @@
   "prisma": {
     "seed": "cd backend && node prisma/seed.js"
   },
-  "dependencies": {},
   "devDependencies": {
-    "turbo": "^2.5.5",
-    "vercel": "^32.0.0"
+    "turbo": "^2.5.5"
   },
   "engines": {
     "node": ">=20.x"
